@@ -1,0 +1,139 @@
+<mxfile host="65bd71144e">
+    <diagram id="pRYmINDB_M8l6lsi4clt" name="第 1 页">
+        <mxGraphModel dx="2459" dy="1012" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="2" value="Foundation" style="rounded=1;whiteSpace=wrap;html=1;verticalAlign=top;" parent="1" vertex="1">
+                    <mxGeometry x="-800" y="913" width="1170" height="90" as="geometry"/>
+                </mxCell>
+                <mxCell id="3" value="Dependency" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="-800" y="1088" width="1170" height="59" as="geometry"/>
+                </mxCell>
+                <mxCell id="4" value="Application" style="rounded=1;whiteSpace=wrap;html=1;verticalAlign=middle;" parent="1" vertex="1">
+                    <mxGeometry x="-800" y="220" width="1160" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="5" value="Math" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="-775" y="939" width="90" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="6" value="Memory" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="-675" y="939" width="90" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="8" value="IO" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="-568" y="939" width="90" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="9" value="HID" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="-70" y="300" width="104" height="468" as="geometry"/>
+                </mxCell>
+                <mxCell id="10" value="Thread" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="-463" y="939" width="90" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="13" value="Audio" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="250" y="300" width="100" height="464" as="geometry"/>
+                </mxCell>
+                <mxCell id="19" value="Graphic" style="rounded=1;whiteSpace=wrap;html=1;verticalAlign=top;" parent="1" vertex="1">
+                    <mxGeometry x="-797" y="424" width="597" height="336" as="geometry"/>
+                </mxCell>
+                <mxCell id="20" value="Platform" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="-800" y="1023" width="1170" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="21" value="Renderer" style="rounded=1;whiteSpace=wrap;html=1;verticalAlign=top;" parent="1" vertex="1">
+                    <mxGeometry x="-783.25" y="577" width="562.5" height="150" as="geometry"/>
+                </mxCell>
+                <mxCell id="22" value="Effect" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="-767" y="464" width="80" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="23" value="PostProcessing" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="-667" y="464" width="100" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="25" value="Rendering" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="-775" y="520" width="545" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="27" value="SoftRenderer" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="-767" y="604" width="90" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="28" value="OpenGLRenderer" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="-547" y="604" width="120" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="29" value="GLESRenderer" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="-767" y="660" width="120" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="30" value="MetaRenderer" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="-410" y="604" width="120" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="31" value="VulkanRenderer" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="-667" y="604" width="110" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="32" value="Illumination" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="-547" y="464" width="90" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="33" value="Animation System" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="47" y="300" width="190" height="220" as="geometry"/>
+                </mxCell>
+                <mxCell id="34" value="ResourceManager" style="rounded=1;whiteSpace=wrap;html=1;verticalAlign=top;" parent="1" vertex="1">
+                    <mxGeometry x="-800" y="780" width="1160" height="120" as="geometry"/>
+                </mxCell>
+                <mxCell id="36" value="UI" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="-500" y="300" width="300" height="90" as="geometry"/>
+                </mxCell>
+                <mxCell id="37" value="AI" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="-190" y="300" width="100" height="210" as="geometry"/>
+                </mxCell>
+                <mxCell id="38" value="Net" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="-190" y="540" width="100" height="228" as="geometry"/>
+                </mxCell>
+                <mxCell id="39" value="Physics" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="50" y="540" width="187" height="224" as="geometry"/>
+                </mxCell>
+                <mxCell id="40" value="System" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="-353" y="939" width="90" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="41" value="Scene" style="rounded=1;whiteSpace=wrap;html=1;verticalAlign=top;" parent="1" vertex="1">
+                    <mxGeometry x="-792.5" y="300" width="282.5" height="90" as="geometry"/>
+                </mxCell>
+                <mxCell id="26" value="Terrain" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="-785.5" y="340" width="90" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="42" value="Utils" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="-250" y="938" width="90" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="43" value="Image" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="-785.5" y="800" width="90" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="44" value="Sound" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="-677" y="800" width="90" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="45" value="Model" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="-567" y="800" width="90" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="46" value="Scene" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="-457" y="800" width="90" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="47" value="Animation" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="-353" y="800" width="90" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="49" value="Video" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="-250" y="800" width="90" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="57" value="Text" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="-443" y="464" width="90" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="58" value="Camera" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="-685" y="340" width="90" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="59" value="Debugger" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="-140" y="938" width="90" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="60" value="Config" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="-140" y="800" width="90" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="61" value="Shader" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="-30" y="800" width="90" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="62" value="Material" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="80" y="800" width="90" height="40" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>

@@ -1,0 +1,21 @@
+{
+    "makefile.extensionOutputFolder": "./.vscode",
+    "files.associations": {
+        "cmath": "cpp",
+        "ostream": "cpp",
+        "xiosbase": "cpp",
+        "cstdlib": "cpp",
+        "iostream": "cpp",
+        "cassert": "cpp",
+        "istream": "cpp",
+        "ios": "cpp",
+        "xlocnum": "cpp",
+        "xstring": "cpp",
+        "xutility": "cpp",
+        "vector": "cpp",
+        "chrono": "cpp",
+        "*.rh": "cpp",
+        "thread": "cpp",
+        "type_traits": "cpp"
+    }
+}
