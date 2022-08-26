@@ -287,7 +287,7 @@ namespace Magic
     Plane<T> Matrix4x4<T>::Transform(const Plane<T> &plane) const
     {
         Vector3<T> member = Transform(plane.GetMemberPoint());
-        
+
         Matrix4x4<T> transposedInverse;
         Matrix4x4<T> inverse;
         if (!this->GetInverse(inverse))
@@ -301,11 +301,11 @@ namespace Magic
     }
 
     template <typename T>
-	Matrix4x4<T> &Matrix4x4<T>::BuildProjectionMatrixPerspectiveFovRH(T fieldOfViewRadians, T aspectRatio, T zNear, T zFar)
-	{
+    Matrix4x4<T> &Matrix4x4<T>::BuildProjectionMatrixPerspectiveFovRH(T fieldOfViewRadians, T aspectRatio, T zNear, T zFar)
+    {
         const T h = static_cast<T>(1.0 / tan(fieldOfViewRadians * 0.5f));
         assert(aspectRatio != 0.f);
-        const T w = static_cast<T>(h / aspectRatio);
+        const T w = static_cast<T>(h * aspectRatio);
         assert(zNear != zFar);
 
         m[0] = w;
@@ -329,73 +329,72 @@ namespace Magic
         m[15] = 0;
 
         return *this;
-	}
-
-
-    template <typename T>
-	Matrix4x4<T> &Matrix4x4<T>::BuildProjectionMatrixOrthoRH(T widthOfViewVolume, T heightOfViewVolume, T zNear, T zFar)
-	{
-		assert(widthOfViewVolume != 0.f);
-		assert(heightOfViewVolume != 0.f);
-		assert(zNear != zFar);
-
-		m[0] = (T)(2 / widthOfViewVolume);
-		m[1] = 0;
-		m[2] = 0;
-		m[3] = 0;
-
-		m[4] = 0;
-		m[5] = (T)(2 / heightOfViewVolume);
-		m[6] = 0;
-		m[7] = 0;
-
-		m[8] = 0;
-		m[9] = 0;
-		m[10] = (T)(2 / (zNear - zFar));
-		m[11] = -1;
-
-		m[12] = 0;
-		m[13] = 0;
-		m[14] = (T)((zNear + zFar) / (zNear - zFar));
-		m[15] = 0;
-
-		return *this;
-	}
+    }
 
     template <typename T>
-	Matrix4x4<T> &Matrix4x4<T>::BuildCameraLookAtMatrix(const Vector3<T> &position, const Vector3<T> &dir, const Vector3<T> &upVector)
-	{
-		Vector3<T> zaxis = -dir;
-		zaxis.Normalize();
+    Matrix4x4<T> &Matrix4x4<T>::BuildProjectionMatrixOrthoRH(T widthOfViewVolume, T heightOfViewVolume, T zNear, T zFar)
+    {
+        assert(widthOfViewVolume != 0.f);
+        assert(heightOfViewVolume != 0.f);
+        assert(zNear != zFar);
 
-		Vector3<T> xaxis = upVector.CrossProduct(zaxis);
-		xaxis.Normalize();
+        m[0] = (T)(2 / widthOfViewVolume);
+        m[1] = 0;
+        m[2] = 0;
+        m[3] = 0;
 
-		Vector3<T> yaxis = zaxis.CrossProduct(xaxis);
-		yaxis.Normalize();
+        m[4] = 0;
+        m[5] = (T)(2 / heightOfViewVolume);
+        m[6] = 0;
+        m[7] = 0;
 
-		m[0] = (T)xaxis.x;
-		m[1] = (T)yaxis.x;
-		m[2] = (T)zaxis.x;
-		m[3] = 0;
+        m[8] = 0;
+        m[9] = 0;
+        m[10] = (T)(2 / (zNear - zFar));
+        m[11] = -1;
 
-		m[4] = (T)xaxis.y;
-		m[5] = (T)yaxis.y;
-		m[6] = (T)zaxis.y;
-		m[7] = 0;
+        m[12] = 0;
+        m[13] = 0;
+        m[14] = (T)((zNear + zFar) / (zNear - zFar));
+        m[15] = 0;
 
-		m[8] = (T)xaxis.z;
-		m[9] = (T)yaxis.z;
-		m[10] = (T)zaxis.z;
-		m[11] = 0;
+        return *this;
+    }
 
-		m[12] = (T)-xaxis.DotProduct(position);
-		m[13] = (T)-yaxis.DotProduct(position);
-		m[14] = (T)-zaxis.DotProduct(position);
-		m[15] = 1;
+    template <typename T>
+    Matrix4x4<T> &Matrix4x4<T>::BuildCameraLookAtMatrix(const Vector3<T> &position, const Vector3<T> &dir, const Vector3<T> &upVector)
+    {
+        Vector3<T> zaxis = -dir;
+        zaxis.Normalize();
 
-		return *this;
-	}
+        Vector3<T> xaxis = upVector.CrossProduct(zaxis);
+        xaxis.Normalize();
+
+        Vector3<T> yaxis = zaxis.CrossProduct(xaxis);
+        yaxis.Normalize();
+
+        m00 = (T)xaxis.x;
+        m01 = (T)xaxis.y;
+        m02 = (T)xaxis.z;
+        m03 = (T)-xaxis.DotProduct(position);
+
+        m10 = (T)yaxis.x;
+        m11 = (T)yaxis.y;
+        m12 = (T)yaxis.z;
+        m13 = (T)-yaxis.DotProduct(position);
+
+        m20 = (T)zaxis.x;
+        m21 = (T)zaxis.y;
+        m22 = (T)zaxis.z;
+        m23 = (T)-zaxis.DotProduct(position);
+
+        m30 = 0;
+        m31 = 0;
+        m32 = 0;
+        m33 = 1;
+
+        return *this;
+    }
 
     template <typename T>
     Matrix4x4<T> Matrix4x4<T>::operator*(const Matrix4x4<T> &m) const
@@ -429,8 +428,7 @@ namespace Magic
             m00 * v.x + m01 * v.y + m02 * v.z + m03 * v.w,
             m10 * v.x + m11 * v.y + m12 * v.z + m13 * v.w,
             m20 * v.x + m21 * v.y + m22 * v.z + m23 * v.w,
-            m30 * v.x + m31 * v.y + m32 * v.z + m33 * v.w
-        );
+            m30 * v.x + m31 * v.y + m32 * v.z + m33 * v.w);
     }
 
     template <typename T>

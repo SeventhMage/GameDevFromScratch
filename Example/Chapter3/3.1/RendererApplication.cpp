@@ -44,9 +44,9 @@ namespace Magic
         IVertexBuffer *vertexBuffer = Renderer->CreateVertexBuffer();
         IIndexBuffer *indexBuffer = Renderer->CreateIndexBuffer();
 
-        float triangle[] = { -10.f, -10.f, -100.f, 1.f, 0.f, 0.f,
-            10.f, -10.f, -100.f, 0.0f, 1.0f, 0.0f,
-            0.f, 10.f, -100.f, 0.0f, 0.0f, 1.0f,
+        float triangle[] = { -1.f, -1.f, -5.f, 1.f, 0.f, 0.f,
+            1.f, -1.f, -5.f, 0.0f, 1.0f, 0.0f,
+            0.f, 1.f, -5.f, 0.0f, 0.0f, 1.0f,
             };
         vertexBuffer->BufferData(triangle, sizeof(triangle), sizeof(triangle) / (6 * sizeof(float)));
         vertexBuffer->GetAttribute()->SetPositionAttr(0, sizeof(float) * 6);
@@ -64,7 +64,7 @@ namespace Magic
         Renderer->SetClearColor(0, 0, 0);
         Matrix4x4f vMat, proMat;
         vMat.BuildCameraLookAtMatrix(Vector3f(0, 0, 0), Vector3f(0, 0, -1), Vector3f(0, 1, 0));
-        proMat.BuildProjectionMatrixOrthoRH(PI / 6.f,   1.0f * GetWindowHeight() / GetWindowWidth(), 1.0f, 1000.f);
+        proMat.BuildProjectionMatrixPerspectiveFovRH(PI / 6.f,   1.0f * GetWindowHeight() / GetWindowWidth(), 1.0f, 1000.f);
         Renderer->SetGlobalUniform("mvpMat", (proMat * vMat).m, sizeof(Matrix4x4f));
         return true;
     }
