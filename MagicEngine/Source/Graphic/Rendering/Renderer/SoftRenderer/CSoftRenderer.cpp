@@ -193,7 +193,6 @@ namespace Magic
                     _Rasterizer->SetDrawBuffer(rt->GetColorBuffer(), _Width, _Height);
                     _Rasterizer->SetDepthBuffer(rt->GetDepthBuffer());
 
-                    cout << trianglePos[0] << "-----" << trianglePos[1] << "----" << trianglePos[2] << endl;
                     _Rasterizer->DrawTriangle(trianglePos[0], trianglePos[1], trianglePos[2], triangleUV[0], triangleUV[1], triangleUV[2], 
                         Color(1.f, triangleColor[0].x, triangleColor[0].y, triangleColor[0].z), Color(1.f, triangleColor[1].x, triangleColor[1].y, triangleColor[1].z),
                         Color(1.f, triangleColor[2].x, triangleColor[2].y, triangleColor[2].z));
