@@ -305,7 +305,7 @@ namespace Magic
     {
         const T h = static_cast<T>(1.0 / tan(fieldOfViewRadians * 0.5f));
         assert(aspectRatio != 0.f);
-        const T w = static_cast<T>(h * aspectRatio);
+        const T w = static_cast<T>(h / aspectRatio);
         assert(zNear != zFar);
 
         m[0] = w;
@@ -314,18 +314,18 @@ namespace Magic
         m[3] = 0;
 
         m[4] = 0;
-        m[5] = (T)h;
+        m[5] = h;
         m[6] = 0;
         m[7] = 0;
 
         m[8] = 0;
         m[9] = 0;
-        m[10] = (T)((zFar + zNear) / (zNear - zFar));
+        m[10] = (zNear + zFar) / (zNear - zFar);
         m[11] = (T)(2.0f * zNear * zFar / (zNear - zFar));
 
         m[12] = 0;
         m[13] = 0;
-        m[14] = -1;
+        m[14] = (T)-1;
         m[15] = 0;
 
         return *this;
@@ -351,12 +351,12 @@ namespace Magic
         m[8] = 0;
         m[9] = 0;
         m[10] = (T)(2 / (zNear - zFar));
-        m[11] = -1;
+        m[11] = (T)((zNear + zFar) / (zNear - zFar));
 
         m[12] = 0;
         m[13] = 0;
-        m[14] = (T)((zNear + zFar) / (zNear - zFar));
-        m[15] = 0;
+        m[14] = 0;
+        m[15] = 1;
 
         return *this;
     }
