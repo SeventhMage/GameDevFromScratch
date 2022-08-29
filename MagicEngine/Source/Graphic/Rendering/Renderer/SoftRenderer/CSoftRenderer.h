@@ -5,7 +5,7 @@
 
 #include "Graphic/Rendering/CRenderer.h"
 #include "Graphic/Rendering/IRenderInput.h"
-#include "Graphic/Rendering/CSoftShaderProgram.h"
+#include "CSoftShaderProgram.h"
 #include "Foundation/Math/Color.hpp"
 #include "CSoftRenderTarget.h"
 #include "CRasterizer.h"
@@ -36,6 +36,7 @@ namespace Magic
         virtual void Draw(IRenderInput *) override;
         virtual void End() override;
         virtual void OnViewportChange() override;
+        virtual IShaderProgram *CreateShaderProgram(const char *vertShader, const char *fragShader) const;
     private:
 
         typedef void (CSoftRenderer::*DrawFunction)(IRenderInput *);

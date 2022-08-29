@@ -30,4 +30,28 @@ private:                              \
     static bool bInitializeRegistered_##classname = \
         classname::RegisterInitialize()
 
+#define DECLARE_TERMINATE            \
+public:                              \
+    static bool RegisterTerminate(); \
+    static void Terminate();         \
+                                     \
+private:                             \
+    static bool _bTerminateRegistered
+
+#define IMPLEMENT_TERMINATE(classname)                  \
+    bool classname::_bTerminateRegistered = false;      \
+    bool classname::RegisterTerminate()                 \
+    {                                                   \
+        if (!_bTerminateRegistered)                     \
+        {                                               \
+            CMain::AddTerminator(classname::Terminate); \
+            _bTerminateRegistered = true;               \
+        }                                               \
+        return _bTerminateRegistered;                   \
+    }
+
+#define REGISTER_TERMINATE(classname)              \
+    static bool bTerminateRegistered_##classname = \
+        classname::RegisterTerminate()
+
 #endif

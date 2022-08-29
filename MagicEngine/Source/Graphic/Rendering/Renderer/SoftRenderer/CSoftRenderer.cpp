@@ -3,7 +3,6 @@
 #include "CSoftVertexBuffer.h"
 #include "CSoftRenderTarget.h"
 #include "Foundation/Memory/Memory.h"
-#include "Graphic/Rendering/CSoftShaderProgram.h"
 
 #include <iostream>
 
@@ -140,7 +139,7 @@ namespace Magic
             {
                 std::vector<unsigned char> vertDatas = vertexBuffer->GetVertexData(i);
                 outVert.clear();
-                outVert.resize(vertDatas.size());
+                outVert.resize(vertDatas.size() * 2);
 
                 if (_OnVProgram)
                     _OnVProgram(&_GlobalUniforms, &shaderProgram->GetUniforms(), (float *)vertDatas.data(), outVert.data()); 
@@ -224,4 +223,8 @@ namespace Magic
         return _CullMode == CullMode::CULL_BACK ? (vNormal.DotProduct(vCamDir) < 0) : (vNormal.DotProduct(vCamDir) > 0);
     }
 
+    IShaderProgram *CSoftRenderer::CreateShaderProgram(const char *vertShader, const char *fragShader) const
+    {
+        return NEW CSoftShaderProgram(vertShader, fragShader);
+    }
 }

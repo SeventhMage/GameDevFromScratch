@@ -25,11 +25,13 @@ CURDIR := $(shell pwd)
 TARGET = main.exe
 CC = g++
 
+
 $(TARGET):$(OBJ)
 	$(CC) $(LIB_PATH) -o $@ $^  $(LIBS)
 
 
 define CREATE_OBJECT_TARGET
+$(info $(1))
 $(call SOURCE_TO_OBJECT,$(1)) : $(1)
 	$(CC) $(INCLULDES) $(CPPFLAGS) -c -o $$@ $$^
 endef

@@ -22,7 +22,6 @@ namespace Magic
         void DrawTriangle(Vector4f p0, Vector4f p1, Vector4f p2, Vector2f t0, Vector2f t1, Vector2f t2, Color c0, Color c1, Color c2);
         void DrawLine(int x0, int y0, int x1, int y1, const Color &c = Color(1, 0, 0, 0));
         void DrawPixel(int x, int y, const Color &c);
-
     private:
         void DrawTopTriangle(const Vector4f &p0, const Vector2f &t0, const Color &c0,
                              const Vector4f &p1, const Vector2f &t1, const Color &c1,

@@ -1,4 +1,7 @@
-#include "Graphic/Rendering/CSoftShaderProgram.h"
+#include "CSoftShaderProgram.h"
+#include "Graphic/Rendering/CSoftProgram.h"
+
+#include <iostream>
 
 namespace Magic
 {
@@ -7,4 +10,11 @@ namespace Magic
     {
     }
 
+    CSoftShaderProgram::CSoftShaderProgram(const char *vertexShader, const char *fragShader)
+    {
+        _VertexProgram = CSoftProgram::GetVProgram(vertexShader);
+        _FragmentProgram = CSoftProgram::GetFProgram(fragShader);
+
+        std::cout << _VertexProgram << " " << _FragmentProgram << " " << vertexShader << " " << fragShader << std::endl; 
+    }
 }

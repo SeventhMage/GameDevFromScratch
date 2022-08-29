@@ -10,7 +10,14 @@ namespace Magic
     IMPLEMENT_INITIALIZE(classname);        \
     void classname::Initialize()            \
     {                                       \
-        TheApp = NEW classname;       \
+        TheApp = NEW classname;             \
+    }
+
+#define IMPLEMENT_APP_TERMINATE(classname) \
+    IMPLEMENT_TERMINATE(classname);        \
+    void classname::Terminate()            \
+    {                                      \
+        SAFE_DELETE(TheApp);               \
     }
 }
 
