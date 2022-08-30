@@ -26,6 +26,7 @@ namespace Magic
         virtual bool HasNormal() const;
         virtual bool HasColor() const;
         virtual bool HasUV() const;
+        virtual int GetOutSize() const;
     private:
         int _PositionOffset;
         int _PositionStride;

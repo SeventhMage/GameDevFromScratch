@@ -11,9 +11,11 @@
 
 namespace Magic
 {
+
+    typedef map<string, vector<float>> UniformMap;
+
     static void VertexShader(const void *globalUniforms, const void *uniforms, const void *datas, unsigned char *out)
     {
-        typedef map<string, vector<float>> UniformMap;
         UniformMap globalU = *((UniformMap *)globalUniforms);
         UniformMap u = *((UniformMap *)uniforms);
         Matrix4x4f mvpMat4(globalU["mvpMat"].data());
@@ -22,30 +24,25 @@ namespace Magic
         const Vector3f &inColor = *(Vector3f *)(&inPosition + 1);
 
         Vector4f &outPosition = *(Vector4f *)out;
-        Vector3f &outColor = *(Vector3f *)(&outPosition + 1);
+        Color &outColor = *(Color *)(&outPosition + 1);
         outPosition = mvpMat4 * Vector4f(inPosition.x, inPosition.y, inPosition.z, 1.0f);
-        outColor = inColor;
+        outColor = Color(1.f, inColor.x, inColor.y, inColor.z);
     }
 
-    IMPLEMENT_VPROGRAM(VertexShader);
     REGISTER_VPROGRAM(VertexShader);
 
-    static Color FragmentShader(const void *uniforms, ISampler **samplers, const void *datas)
+    static Color FragmentShader(const void *globalUniforms, const void *uniforms, ISampler **samplers, const void *datas)
     {
-        Vector3f inColor;
-        // Vector2f inUV;
-        // memcpy(inColor.v, datas, sizeof(inColor.v));
-        // memcpy(inUV.v, (unsigned char *)datas + sizeof(inColor.v), sizeof(inUV.v));
+        Color &inColor = *((Color *)datas);
+        //Vector2f &inUV = *(Vector2f *)(&inColor + 1);
 
         // ISampler *sampeler1 = samplers[0];
-        // ISampler *sampeler2 = samplers[1];
-        // Color tex1 = sampeler1->Sample(inUV);
-        // Color tex2 = sampeler2->Sample(inUV);
+        // Color albedo = sampeler1->Sample(inUV);
 
-        return Color(1.0f, inColor.x, inColor.y, inColor.z);
+        // return Color(albedo.a, albedo.r * inColor.x, albedo.g * inColor.y, albedo.b * inColor.z);
+        return inColor;
     }
 
-    IMPLEMENT_FPROGRAM(FragmentShader);
     REGISTER_FPROGRAM(FragmentShader);
 
 }

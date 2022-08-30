@@ -9,8 +9,8 @@ using namespace std;
 
 namespace Magic
 {
-    typedef void (*VProgram)(const void*, const void *, const void *, unsigned char*);
-    typedef Color (*FProgram)(const void*, ISampler**, const void*);
+    typedef void (*VProgram)(const void *, const void *, const void *, unsigned char *);
+    typedef Color (*FProgram)(const void *, const void *, ISampler **, const void *);
     typedef map<string, vector<float>> UniformMap;
     class CSoftShaderProgram : public CShaderProgram
     {
@@ -21,6 +21,7 @@ namespace Magic
         FProgram GetFragmentProgram() { return _FragmentProgram; }
 
         UniformMap &GetUniforms() { return _Uniforms; }
+
     private:
         VProgram _VertexProgram;
         FProgram _FragmentProgram;

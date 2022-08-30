@@ -23,6 +23,7 @@ namespace Magic
         virtual bool HasNormal() const = 0;
         virtual bool HasColor() const = 0;
         virtual bool HasUV() const = 0;
+        virtual int GetOutSize() const = 0;
     };
 }
 

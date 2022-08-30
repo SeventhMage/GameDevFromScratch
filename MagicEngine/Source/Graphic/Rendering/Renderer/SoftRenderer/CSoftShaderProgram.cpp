@@ -13,8 +13,6 @@ namespace Magic
     CSoftShaderProgram::CSoftShaderProgram(const char *vertexShader, const char *fragShader)
     {
         _VertexProgram = CSoftProgram::GetVProgram(vertexShader);
-        _FragmentProgram = CSoftProgram::GetFProgram(fragShader);
-
-        std::cout << _VertexProgram << " " << _FragmentProgram << " " << vertexShader << " " << fragShader << std::endl; 
+        _FragmentProgram  = CSoftProgram::GetFProgram(fragShader);
     }
 }

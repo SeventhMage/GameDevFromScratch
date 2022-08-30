@@ -22,30 +22,19 @@ namespace Magic
         const Vector3f &inColor = *(Vector3f *)(&inPosition + 1);
 
         Vector4f &outPosition = *(Vector4f *)out;
-        Vector3f &outColor = *(Vector3f *)(&outPosition + 1);
+        Color &outColor = *(Color *)(&outPosition + 1);
         outPosition = mvpMat4 * Vector4f(inPosition.x, inPosition.y, inPosition.z, 1.0f);
-        outColor = inColor;
+        outColor = Color(1.f, inColor.x, inColor.y, inColor.z);
     }
 
-    IMPLEMENT_VPROGRAM(VertexShader);
     REGISTER_VPROGRAM(VertexShader);
 
-    static Color FragmentShader(const void *uniforms, ISampler **samplers, const void *datas)
+    static Color FragmentShader(const void *globalUniforms, const void *uniforms, ISampler **samplers, const void *datas)
     {
-        Vector3f inColor;
-        // Vector2f inUV;
-        // memcpy(inColor.v, datas, sizeof(inColor.v));
-        // memcpy(inUV.v, (unsigned char *)datas + sizeof(inColor.v), sizeof(inUV.v));
-
-        // ISampler *sampeler1 = samplers[0];
-        // ISampler *sampeler2 = samplers[1];
-        // Color tex1 = sampeler1->Sample(inUV);
-        // Color tex2 = sampeler2->Sample(inUV);
-
-        return Color(1.0f, inColor.x, inColor.y, inColor.z);
+        Color &inColor = *(Color *)datas;
+        return inColor;
     }
 
-    IMPLEMENT_FPROGRAM(FragmentShader);
     REGISTER_FPROGRAM(FragmentShader);
 
 }

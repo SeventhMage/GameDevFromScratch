@@ -22,24 +22,26 @@ namespace Magic
     }
 
 #define REGISTER_VPROGRAM(program) \
+    IMPLEMENT_VPROGRAM(program);   \
     static bool bInitializeRegistered_##program = program##Register()
 
 #define IMPLEMENT_FPROGRAM(program)                         \
-    static bool bVInitializeRegistered_##program = false;   \
-    static void program##Initialize()                       \
-    {                                                       \
+    static bool bVInitializeRegistered_##program = false;                \
+    static void program##Initialize()                                    \
+    {                                                                    \
         CSoftProgram::RegisterFProgram(#program, &program); \
-    }                                                       \
-    bool program##Register()                                \
-    {                                                       \
-        if (!bVInitializeRegistered_##program)              \
-        {                                                   \
-            CMain::AddInitializer(&program##Initialize);    \
-        }                                                   \
-        return bVInitializeRegistered_##program;            \
+    }                                                                    \
+    bool program##Register()                                             \
+    {                                                                    \
+        if (!bVInitializeRegistered_##program)                           \
+        {                                                                \
+            CMain::AddInitializer(&program##Initialize);                 \
+        }                                                                \
+        return bVInitializeRegistered_##program;                         \
     }
 
 #define REGISTER_FPROGRAM(program) \
+    IMPLEMENT_FPROGRAM(program);   \
     static bool bInitializeRegistered_##program = program##Register()
 
 }

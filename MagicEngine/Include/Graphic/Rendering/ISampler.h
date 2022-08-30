@@ -10,7 +10,7 @@ namespace Magic
     {
     public:
         virtual ~ISampler(){}
-        virtual Color Sample(Vector2f uv);
+        virtual Color Sample(const Vector2f &uv) = 0;
     };
 }
 

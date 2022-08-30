@@ -122,6 +122,14 @@ namespace Magic
         _OnVProgram = shaderProgram->GetVertexProgram();
         _OnFProgram = shaderProgram->GetFragmentProgram();
 
+        for (int i = 0; i < CRenderInput::MAX_TEXTURE_NUM; ++i)
+        {
+            ITexture *texture = renderInput->GetTexture(i);
+            if (texture)
+                _sampler[i].SetTexture(texture);
+        }
+        _Rasterizer->SetFProgram(_OnFProgram, &_GlobalUniforms, &shaderProgram->GetUniforms(), (ISampler **)&_sampler);
+
         // todo
         if (indexBuffer && vertexBuffer)
         {
@@ -132,14 +140,13 @@ namespace Magic
             int j = 0;
             Vector4f trianglePos[3];
             Vector3f triangleNormal[3];
-            Vector3f triangleColor[3];
+            Color triangleColor[3];
             Vector2f triangleUV[3];
-            std::vector<unsigned char> outVert;
+            std::vector<unsigned char> outVert(vertexAttribute->GetOutSize());
             for (int i = 0; i < vertexCount; ++i)
             {
                 std::vector<unsigned char> vertDatas = vertexBuffer->GetVertexData(i);
                 outVert.clear();
-                outVert.resize(vertDatas.size() * 2);
 
                 if (_OnVProgram)
                     _OnVProgram(&_GlobalUniforms, &shaderProgram->GetUniforms(), (float *)vertDatas.data(), outVert.data()); 
@@ -167,8 +174,8 @@ namespace Magic
 
                 if (vertexAttribute->HasColor())
                 {
-                    memcpy(triangleColor[j].v, outVert.data() + size, sizeof(Vector3f));
-                    size += sizeof(Vector3f);
+                    memcpy(triangleColor[j].c, outVert.data() + size, sizeof(Color));
+                    size += sizeof(Color);
                 }
 
                 if (vertexAttribute->HasUV())
@@ -193,8 +200,7 @@ namespace Magic
                     _Rasterizer->SetDepthBuffer(rt->GetDepthBuffer());
 
                     _Rasterizer->DrawTriangle(trianglePos[0], trianglePos[1], trianglePos[2], triangleUV[0], triangleUV[1], triangleUV[2], 
-                        Color(1.f, triangleColor[0].x, triangleColor[0].y, triangleColor[0].z), Color(1.f, triangleColor[1].x, triangleColor[1].y, triangleColor[1].z),
-                        Color(1.f, triangleColor[2].x, triangleColor[2].y, triangleColor[2].z));
+                        triangleColor[0], triangleColor[1], triangleColor[2]);
                     j = 0;
                 }
                 else

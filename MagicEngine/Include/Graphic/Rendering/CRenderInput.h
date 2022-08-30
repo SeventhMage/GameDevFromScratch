@@ -17,8 +17,8 @@ namespace Magic
         virtual ITexture *GetTexture(int slot) const;
         virtual IShaderProgram *GetShaderProgram() const;
         virtual void Prepare();
-    private:
         static const int MAX_TEXTURE_NUM = 8;
+    private:
         IGeometry *_Geometry;
         IShaderProgram *_ShaderProgram;
         ITexture *_Textures[MAX_TEXTURE_NUM];

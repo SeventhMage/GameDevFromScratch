@@ -17,11 +17,13 @@ namespace Magic
         DECLARE_TERMINATE;
     public:
         typedef void (*VProgram)(const void*, const void *, const void *, unsigned char*);
-        typedef Color (*FProgram)(const void*, ISampler**, const void*);
+        typedef Color (*FProgram)(const void*, const void *, ISampler**, const void*);
+
         static void RegisterVProgram(const char *name, VProgram vProgram);
         static void RegisterFProgram(const char *name, FProgram fProgram);
         static VProgram GetVProgram(const char *name);
         static FProgram GetFProgram(const char *name);
+
     private:
         static map<string, VProgram> *_pVPrograms;
         static map<string, FProgram> *_pFPrograms;

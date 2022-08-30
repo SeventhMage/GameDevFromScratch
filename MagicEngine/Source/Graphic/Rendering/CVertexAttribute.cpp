@@ -80,4 +80,18 @@ namespace Magic
     {
         return _UVOffset >= 0;
     }
+
+    int CVertexAttribute::GetOutSize() const
+    {
+        int outSize = 0;
+        if (HasPosition())
+            outSize += sizeof(float) * 4;
+        if (HasNormal())
+            outSize += sizeof(float) * 3;
+        if (HasColor())
+            outSize += sizeof(float) * 4;
+        if (HasUV())
+            outSize += sizeof(float) * 2;
+        return outSize;
+    }
 }

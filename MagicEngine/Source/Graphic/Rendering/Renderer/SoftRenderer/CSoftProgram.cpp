@@ -22,7 +22,6 @@ namespace Magic
 
     void CSoftProgram::RegisterVProgram(const char *name, VProgram vProgram)
     {
-        std::cout << name << " " << vProgram << std::endl;
         _pVPrograms->insert(make_pair(name, vProgram));
     }
     void CSoftProgram::RegisterFProgram(const char *name, FProgram fProgram)

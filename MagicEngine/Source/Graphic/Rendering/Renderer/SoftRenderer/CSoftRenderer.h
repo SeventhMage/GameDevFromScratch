@@ -4,7 +4,7 @@
 #include <vector>
 
 #include "Graphic/Rendering/CRenderer.h"
-#include "Graphic/Rendering/IRenderInput.h"
+#include "Graphic/Rendering/CRenderInput.h"
 #include "CSoftShaderProgram.h"
 #include "Foundation/Math/Color.hpp"
 #include "CSoftRenderTarget.h"
@@ -66,6 +66,7 @@ namespace Magic
         FrontMode _FrontMode;
         CullMode _CullMode;
         
+        CSampler _sampler[CRenderInput::MAX_TEXTURE_NUM];
 
     };
 }

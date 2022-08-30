@@ -5,13 +5,16 @@
 namespace Magic
 {
 		CRasterizer::CRasterizer()
-			:m_pDrawBuffer(nullptr)
-			, m_pDepthBuffer(nullptr)
-			, m_bufferWidth(0)
-			, m_bufferHeight(0)
-			, m_pTextureData(nullptr)
-			, m_textureWidth(0)
-			, m_textureHeight(0)	
+			:_pDrawBuffer(nullptr)
+			, _pDepthBuffer(nullptr)
+			, _bufferWidth(0)
+			, _bufferHeight(0)
+			, _pTextureData(nullptr)
+			, _TextureWidth(0)
+			, _TextureHeight(0)	
+			, _OnFProgram(nullptr)
+			, _pGlobalUniforms(nullptr)
+			, _pUniforms(nullptr)
 		{
 			
 		}
@@ -155,22 +158,22 @@ namespace Magic
 
 			for (int i = (int)p0.y; i < (int)p2.y; ++i)
 			{
-				if (i >= m_bufferHeight)
+				if (i >= _bufferHeight)
 					break;
 
 
-				if (i > 0 && x1 >= 0 && x0 < m_bufferWidth && x1 >= x0)
+				if (i > 0 && x1 >= 0 && x0 < _bufferWidth && x1 >= x0)
 				{
-					unsigned int *addr = (unsigned int *)m_pDrawBuffer + (unsigned int)(MAX(x0, 0) + (i - 1) * m_bufferWidth);
+					unsigned int *addr = (unsigned int *)_pDrawBuffer + (unsigned int)(MAX(x0, 0) + (i - 1) * _bufferWidth);
 
 					Vector2f tl(ul, vl);
 
 					Vector2f tr(ur, vr);
 
-					if (m_pDepthBuffer)
+					if (_pDepthBuffer)
 					{
-						float *zbuffer = m_pDepthBuffer + int(MAX(x0, 0) + (i - 1) * m_bufferWidth);
-						if (m_pTextureData)
+						float *zbuffer = _pDepthBuffer + int(MAX(x0, 0) + (i - 1) * _bufferWidth);
+						if (_pTextureData)
 						{
 							FillColor(addr, zbuffer, x0, zl, wl, x1, zr, wr, cl, cr, tl, tr);							
 						}
@@ -267,20 +270,20 @@ namespace Magic
 
 			for (int i = (int)p0.y; i < (int)p2.y; ++i)
 			{				
-				if (i >= m_bufferHeight)
+				if (i >= _bufferHeight)
 					break;			
 
-				if (i > 0 && x1 >= 0 && x0 < m_bufferWidth && x1 >= x0)
+				if (i > 0 && x1 >= 0 && x0 < _bufferWidth && x1 >= x0)
 				{				
-					unsigned int *addr = (unsigned int *)m_pDrawBuffer + (unsigned int)(MAX(x0, 0) + (i - 1) * m_bufferWidth);
+					unsigned int *addr = (unsigned int *)_pDrawBuffer + (unsigned int)(MAX(x0, 0) + (i - 1) * _bufferWidth);
 
 					Vector2f tl(ul, vl);
 					Vector2f tr(ur, vr);
 
-					if (m_pDepthBuffer)
+					if (_pDepthBuffer)
 					{
-						float *zbuffer = m_pDepthBuffer + int(MAX(x0, 0) + (i - 1) * m_bufferWidth);
-						if (m_pTextureData)						
+						float *zbuffer = _pDepthBuffer + int(MAX(x0, 0) + (i - 1) * _bufferWidth);
+						if (_pTextureData)						
 							FillColor(addr, zbuffer, x0, zl, wl, x1, zr, wr, cl, cr, tl, tr);
 						else
 							FillColor(addr, zbuffer, x0, zl, wl, x1, zr, wr, cl, cr);
@@ -322,7 +325,8 @@ namespace Magic
 			{
 				float rate = 1.f * i / count;
 				Color color = GetInterpolation(c0, c1, rate);
-				*addr = color.Get32BitColor();
+				auto result = _OnFProgram(_pGlobalUniforms, _pUniforms, _pSamplers, &color);
+				*addr = result.Get32BitColor();
 				++addr;
 			}
 		}
@@ -341,7 +345,7 @@ namespace Magic
 			Color c = c0;
 			for (int i = 0; i < count; ++i)
 			{
-				if (x >= m_bufferWidth)
+				if (x >= _bufferWidth)
 					break;
 				if ((z < *zbuffer) && (z >= -1 && z <= 1) && (x>=0)) //这里的z实际为1/z
 				{
@@ -352,9 +356,9 @@ namespace Magic
 					color.g = c.g * invw;
 					color.b = c.b * invw;
 																											 
-                    //fragment shader
+					auto result = _OnFProgram(_pGlobalUniforms, _pUniforms, _pSamplers, &color);
 
-					*addr = color.Get32BitColor();
+					*addr = result.Get32BitColor();
 					*zbuffer = z;									
 				}
 				
@@ -394,26 +398,29 @@ namespace Magic
 			float v = lt.y;
 			for (int i = 0; i < count; ++i)
 			{
-				if (x >= m_bufferWidth)
+				if (x >= _bufferWidth)
 					break;
 				if ((x >= 0) && (z < *zbuffer) && (z >= -1 && z <= 1)) //This z is 1/z in fact.
 				{											
 					float invw = 1 / w;
-					int tx = (u * invw) * (m_textureWidth - 1); //float calculate can't multiply 3 here.
-					int ty = (1 - (v *invw)) * (m_textureHeight - 1);
-					static Color color;
+					int tx = (u * invw) * (_TextureWidth - 1); //float calculate can't multiply 3 here.
+					int ty = (1 - (v *invw)) * (_TextureHeight - 1);
+					//color + uv
+					static float datas[4 + 2];
+					Color &color = *((Color *)datas);
 					color.a = c.a * invw;
 					color.r = c.r * invw;
 					color.g = c.g * invw;
 					color.b = c.b * invw;
 	
-					static Vector2f texCoord;
+					Vector2f &texCoord = *(Vector2f *)(&color + 1);
 					texCoord.x = tx;
 					texCoord.y = ty;
 
                     // fragment shader
+					auto result = _OnFProgram(_pGlobalUniforms, _pUniforms, _pSamplers, datas);
 
-                    *addr = color.Get32BitColor();
+                    *addr = result.Get32BitColor();
 					*zbuffer = z;																
 				}
 				
@@ -436,18 +443,26 @@ namespace Magic
 			}
 		}
 
+		void CRasterizer::SetFProgram(FProgram fProgram, UniformMap *globalUniforms, UniformMap *uniforms, ISampler **sampler)
+		{
+			_OnFProgram = fProgram;
+			_pGlobalUniforms = globalUniforms;
+			_pUniforms = uniforms;
+			_pSamplers = sampler;
+		}
+
 		void CRasterizer::SetTextureInfo(unsigned char *textureData, int width, int height)
 		{
-			m_pTextureData = textureData;
-			m_textureWidth = width;
-			m_textureHeight = height;
+			_pTextureData = textureData;
+			_TextureWidth = width;
+			_TextureHeight = height;
 		}
 
 		void CRasterizer::SetDrawBuffer(unsigned int *pDrawBuffer, int width, int height)
 		{
-			m_pDrawBuffer = pDrawBuffer;
-			m_bufferWidth = width;
-			m_bufferHeight = height;
+			_pDrawBuffer = pDrawBuffer;
+			_bufferWidth = width;
+			_bufferHeight = height;
 		}
 		
 		//Bresenham:See 3D Game Engine Design Second Edition, page 77
@@ -526,11 +541,11 @@ namespace Magic
 
         void CRasterizer::DrawPixel(int x, int y, const Color &c)
         {
-			x = MIN(MAX(x, 0), m_bufferWidth - 1);
-			y = MIN(MAX(y, 0), m_bufferHeight - 1);
-			unsigned int *addr = (unsigned int*)m_pDrawBuffer + (unsigned int)(x);
+			x = MIN(MAX(x, 0), _bufferWidth - 1);
+			y = MIN(MAX(y, 0), _bufferHeight - 1);
+			unsigned int *addr = (unsigned int*)_pDrawBuffer + (unsigned int)(x);
 			if (y > 0)
-				addr += (unsigned int)((y - 1) * m_bufferWidth);
+				addr += (unsigned int)((y - 1) * _bufferWidth);
 			*addr = c.Get32BitColor();
 		}
 }
