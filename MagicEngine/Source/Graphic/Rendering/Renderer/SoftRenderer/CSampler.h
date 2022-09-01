@@ -2,7 +2,7 @@
 #define _MAGIC_C_SAMPLER_H_
 
 #include "Graphic/Rendering/ISampler.h"
-#include "Graphic/Rendering/ITexture.h"
+#include "CSoftTexture2D.h"
 
 namespace Magic
 {
@@ -11,9 +11,9 @@ namespace Magic
     public:
         CSampler();
         virtual Color Sample(const Vector2f &uv);
-        void SetTexture(ITexture *);
+        void SetTexture(CSoftTexture2D *);
     private:
-        ITexture *_pTexture;
+        CSoftTexture2D *_pTexture;
     };
 }
 

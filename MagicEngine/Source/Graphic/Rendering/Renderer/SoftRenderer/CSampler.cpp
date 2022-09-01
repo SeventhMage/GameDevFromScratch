@@ -9,10 +9,12 @@ namespace Magic
     }
     Color CSampler::Sample(const Vector2f &uv) 
     {
-
+        if (_pTexture)
+            return _pTexture->GetPixel(uv);
+        return Color();
     }
 
-    void CSampler::SetTexture(ITexture *texture)
+    void CSampler::SetTexture(CSoftTexture2D *texture)
     {
         _pTexture = texture;
     }

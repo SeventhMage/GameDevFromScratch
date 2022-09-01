@@ -9,9 +9,6 @@ namespace Magic
 			, _pDepthBuffer(nullptr)
 			, _bufferWidth(0)
 			, _bufferHeight(0)
-			, _pTextureData(nullptr)
-			, _TextureWidth(0)
-			, _TextureHeight(0)	
 			, _OnFProgram(nullptr)
 			, _pGlobalUniforms(nullptr)
 			, _pUniforms(nullptr)
@@ -173,7 +170,7 @@ namespace Magic
 					if (_pDepthBuffer)
 					{
 						float *zbuffer = _pDepthBuffer + int(MAX(x0, 0) + (i - 1) * _bufferWidth);
-						if (_pTextureData)
+						if (_pSamplers)
 						{
 							FillColor(addr, zbuffer, x0, zl, wl, x1, zr, wr, cl, cr, tl, tr);							
 						}
@@ -283,7 +280,7 @@ namespace Magic
 					if (_pDepthBuffer)
 					{
 						float *zbuffer = _pDepthBuffer + int(MAX(x0, 0) + (i - 1) * _bufferWidth);
-						if (_pTextureData)						
+						if (_pSamplers)						
 							FillColor(addr, zbuffer, x0, zl, wl, x1, zr, wr, cl, cr, tl, tr);
 						else
 							FillColor(addr, zbuffer, x0, zl, wl, x1, zr, wr, cl, cr);
@@ -325,7 +322,7 @@ namespace Magic
 			{
 				float rate = 1.f * i / count;
 				Color color = GetInterpolation(c0, c1, rate);
-				auto result = _OnFProgram(_pGlobalUniforms, _pUniforms, _pSamplers, &color);
+				auto result = _OnFProgram(_pGlobalUniforms, _pUniforms, nullptr, &color);
 				*addr = result.Get32BitColor();
 				++addr;
 			}
@@ -403,8 +400,8 @@ namespace Magic
 				if ((x >= 0) && (z < *zbuffer) && (z >= -1 && z <= 1)) //This z is 1/z in fact.
 				{											
 					float invw = 1 / w;
-					int tx = (u * invw) * (_TextureWidth - 1); //float calculate can't multiply 3 here.
-					int ty = (1 - (v *invw)) * (_TextureHeight - 1);
+					float tx = u * invw;
+					float ty = v * invw;
 					//color + uv
 					static float datas[4 + 2];
 					Color &color = *((Color *)datas);
@@ -449,13 +446,6 @@ namespace Magic
 			_pGlobalUniforms = globalUniforms;
 			_pUniforms = uniforms;
 			_pSamplers = sampler;
-		}
-
-		void CRasterizer::SetTextureInfo(unsigned char *textureData, int width, int height)
-		{
-			_pTextureData = textureData;
-			_TextureWidth = width;
-			_TextureHeight = height;
 		}
 
 		void CRasterizer::SetDrawBuffer(unsigned int *pDrawBuffer, int width, int height)

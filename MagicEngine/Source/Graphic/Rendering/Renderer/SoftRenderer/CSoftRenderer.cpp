@@ -13,7 +13,10 @@ namespace Magic
             _FinalRenderTarget(new CSoftRenderTarget(width, height)), _PrimitiveType(PrimitiveType::TRIANGLES),
             _ClearColor(1, 0, 0, 0), _ClearDepth(1.0f), _FrontMode(FrontMode::CCW), _CullMode(CullMode::CULL_BACK)
     {
-        
+        for (int i = 0; i < CRenderInput::MAX_TEXTURE_NUM; ++i)
+        {
+            _sampler[i] = NEW CSampler();
+        }
         _DrawFunctions[0] = &CSoftRenderer::DrawPoints;
         _DrawFunctions[1] = &CSoftRenderer::DrawLines;
         _DrawFunctions[2] = &CSoftRenderer::DrawLineStrip;
@@ -122,13 +125,17 @@ namespace Magic
         _OnVProgram = shaderProgram->GetVertexProgram();
         _OnFProgram = shaderProgram->GetFragmentProgram();
 
+        bool hasTexture = false;
         for (int i = 0; i < CRenderInput::MAX_TEXTURE_NUM; ++i)
         {
             ITexture *texture = renderInput->GetTexture(i);
             if (texture)
-                _sampler[i].SetTexture(texture);
+            {
+                ((CSampler *)_sampler[i])->SetTexture((CSoftTexture2D *)texture);
+                hasTexture = true;
+            }
         }
-        _Rasterizer->SetFProgram(_OnFProgram, &_GlobalUniforms, &shaderProgram->GetUniforms(), (ISampler **)&_sampler);
+        _Rasterizer->SetFProgram(_OnFProgram, &_GlobalUniforms, &shaderProgram->GetUniforms(), hasTexture ? _sampler : nullptr);
 
         // todo
         if (indexBuffer && vertexBuffer)
@@ -180,7 +187,7 @@ namespace Magic
 
                 if (vertexAttribute->HasUV())
                 {
-                    memcpy(triangleUV[j].v, outVert.data() + size, sizeof(Vector3f));
+                    memcpy(triangleUV[j].v, outVert.data() + size, sizeof(Vector2f));
                     size += sizeof(Vector2f);
                 }
 
@@ -232,5 +239,10 @@ namespace Magic
     IShaderProgram *CSoftRenderer::CreateShaderProgram(const char *vertShader, const char *fragShader) const
     {
         return NEW CSoftShaderProgram(vertShader, fragShader);
+    }
+
+    ITexture *CSoftRenderer::CreateTexture(const char *fullPath) const
+    {
+        return NEW CSoftTexture2D(fullPath);
     }
 }

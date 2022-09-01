@@ -44,9 +44,6 @@ namespace Magic
         int _bufferWidth;
         int _bufferHeight;
 
-        unsigned char *_pTextureData;
-        int _TextureWidth;
-        int _TextureHeight;
 
         FProgram _OnFProgram;
         UniformMap *_pGlobalUniforms;

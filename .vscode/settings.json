@@ -16,6 +16,8 @@
         "chrono": "cpp",
         "*.rh": "cpp",
         "thread": "cpp",
-        "type_traits": "cpp"
+        "type_traits": "cpp",
+        "utility": "cpp",
+        "compare": "cpp"
     }
 }

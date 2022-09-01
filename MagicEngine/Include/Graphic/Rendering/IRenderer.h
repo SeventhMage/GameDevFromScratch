@@ -46,6 +46,7 @@ namespace Magic
         virtual void Render() = 0;
         virtual void End() = 0;
         virtual IShaderProgram *CreateShaderProgram(const char *vertShader, const char *fragShader) const = 0;
+        virtual ITexture *CreateTexture(const char *fullPath) const = 0;
     };
 }
 

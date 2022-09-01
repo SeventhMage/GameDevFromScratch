@@ -21,6 +21,7 @@ namespace Magic
         CRenderInput _RenderInput;
         CGeometry *_Geometry;
         IShaderProgram *_ShaderProgram;
+        ITexture *_Texture;
     };
 
     REGISTER_INITIALIZE(RendererApplication);

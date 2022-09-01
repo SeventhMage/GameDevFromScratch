@@ -37,6 +37,7 @@ namespace Magic
         virtual void End() override;
         virtual void OnViewportChange() override;
         virtual IShaderProgram *CreateShaderProgram(const char *vertShader, const char *fragShader) const;
+        virtual ITexture *CreateTexture(const char *fullPath) const;
     private:
 
         typedef void (CSoftRenderer::*DrawFunction)(IRenderInput *);
@@ -66,7 +67,7 @@ namespace Magic
         FrontMode _FrontMode;
         CullMode _CullMode;
         
-        CSampler _sampler[CRenderInput::MAX_TEXTURE_NUM];
+        ISampler *_sampler[CRenderInput::MAX_TEXTURE_NUM];
 
     };
 }

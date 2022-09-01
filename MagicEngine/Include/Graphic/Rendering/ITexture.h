@@ -6,8 +6,12 @@ namespace Magic
     class ITexture
     {
     public:
+        enum Format
+        {
+            ARGB32,
+        };
         virtual ~ITexture(){}
-        virtual void Prepare() = 0;
+        virtual void Prepare() {}
     };
 }
 

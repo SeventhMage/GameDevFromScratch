@@ -17,20 +17,22 @@ namespace Magic
         IVertexBuffer *vertexBuffer = Renderer->CreateVertexBuffer();
         IIndexBuffer *indexBuffer = Renderer->CreateIndexBuffer();
 
-        float triangle[] = { -1.f, -1.f, -10.f, 1.f, 0.f, 0.f,
-            1.f, -1.f, -10.f, 0.0f, 1.0f, 0.0f,
-            0.f, 1.f, -10.f, 0.0f, 0.0f, 1.0f,
+        float triangle[] = { -1.f, -1.f, -10.f,         1.f, 0.f, 0.f,      0.f, 0.f,
+            1.f, -1.f, -10.f,       0.0f, 1.0f, 0.0f,         1.f, 0.f,
+            0.f, 1.f, -10.f,        0.0f, 0.0f, 1.0f,      0.5f, 1.f
             };
-        vertexBuffer->BufferData(triangle, sizeof(triangle), sizeof(triangle) / (6 * sizeof(float)));
-        vertexBuffer->GetAttribute()->SetPositionAttr(0, sizeof(float) * 6);
-        vertexBuffer->GetAttribute()->SetColorAttr(sizeof(float) * 3, sizeof(float) * 6);
+        vertexBuffer->BufferData(triangle, sizeof(triangle), 3); 
+        vertexBuffer->GetAttribute()->SetPositionAttr(0, sizeof(float) * 8);
+        vertexBuffer->GetAttribute()->SetColorAttr(sizeof(float) * 3, sizeof(float) * 8);
+        vertexBuffer->GetAttribute()->SetUVAttr(sizeof(float) * 6, sizeof(float) * 8);
 
         _Geometry = NEW CGeometry(vertexBuffer, nullptr);
-        _RenderInput.SetGeometry(_Geometry);
+        _RenderInput.SetGeometry(_Geometry); 
         _ShaderProgram = Renderer->CreateShaderProgram("VertexShader", "FragmentShader");
         _RenderInput.SetShaderProgram(_ShaderProgram);
-        _RenderInput.SetTexture(0, nullptr);
-        Renderer->SetClearColor(0, 0, 0);
+        _Texture = Renderer->CreateTexture("crate.tga");
+        _RenderInput.SetTexture(0, _Texture);
+        Renderer->SetClearColor(0, 0, 0); 
         Matrix4x4f vMat, proMat; 
         vMat.BuildCameraLookAtMatrix(Vector3f(0, 0, 0), Vector3f(0, 0, -1), Vector3f(0, 1, 0));
         proMat.BuildProjectionMatrixPerspectiveFovRH(PI / 6.f,   1.0f * GetWindowWidth() / GetWindowHeight(), 1.0f, 1000.f);

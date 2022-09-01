@@ -14,6 +14,12 @@ namespace Magic
             : a(a), r(r), g(g), b(b)
         {
         }
+
+        Color(unsigned int color32)
+        :Color(color32 >> 24, (color32 & 0x00FF0000) >> 16, (color32 & 0x0000FF00) >> 8, color32 & 0x000000FF)
+        {
+        }
+
         inline unsigned int Get32BitColor() const
         {
             return (((unsigned int)(a * 0xFF)) << 24) | (((unsigned int)(r * 0xFF)) << 16) | (((unsigned int)(g * 0xFF)) << 8) | ((unsigned int)(b * 0xFF));
