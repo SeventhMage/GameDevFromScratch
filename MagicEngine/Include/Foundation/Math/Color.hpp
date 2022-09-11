@@ -1,6 +1,8 @@
 #ifndef _MAGIC_COLOR_HPP_
 #define _MAGIC_COLOR_HPP_
 
+#include <iostream>
+
 namespace Magic
 {
     class Color
@@ -19,6 +21,29 @@ namespace Magic
         :Color(color32 >> 24, (color32 & 0x00FF0000) >> 16, (color32 & 0x0000FF00) >> 8, color32 & 0x000000FF)
         {
         }
+
+        Color(const Color &c)
+        :a(c.a), r(c.r), g(c.g),b(c.b)
+        {
+
+        }
+        Color(const Color &&c)
+        :a(c.a), r(c.r), g(c.g),b(c.b)
+        {
+        }
+
+        Color &operator=(const Color& c)
+        {
+            if (this != &c)
+            {
+                a = c.a;
+                r = c.r;
+                g = c.g;
+                b = c.b;
+            }
+            return *this;
+        }
+
 
         inline unsigned int Get32BitColor() const
         {
@@ -79,6 +104,12 @@ namespace Magic
         inline Color operator-(const Color &color) const
         {
             return Color(a - color.a, r - color.r, g - color.g, b - color.b);
+        }
+
+        friend std::ostream &operator <<(std::ostream &out, const Color &c)
+        {
+            out << c.a << "," << c.r << "," << c.g << "," << c.b;
+            return out;
         }
 
         union

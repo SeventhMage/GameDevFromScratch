@@ -15,7 +15,7 @@ OBJ = $(patsubst %.cpp, $(O_PATH)/%.o, $(notdir $(SOURCE)))
 SOURCE_TO_OBJECT = ./Obj/$(subst .cpp,.o,$(notdir $(1)))
 
 LIBS = -lgdi32 -lstdc++
-CPPFLAGS = -g -Ddebug -Wall -std=c++11 #-fPIC
+CPPFLAGS = -g -Wall -std=c++11 -Ddebug #-fPIC
 
 CURDIR := $(shell pwd)
 #$(info $(CURDIR))
@@ -31,7 +31,6 @@ $(TARGET):$(OBJ)
 
 
 define CREATE_OBJECT_TARGET
-$(info $(1))
 $(call SOURCE_TO_OBJECT,$(1)) : $(1)
 	$(CC) $(INCLULDES) $(CPPFLAGS) -c -o $$@ $$^
 endef

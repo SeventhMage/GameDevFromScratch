@@ -33,7 +33,7 @@ namespace Magic
         Renderer->SetClearColor(0, 0, 0);
         Matrix4x4f vMat, proMat;
         vMat.BuildCameraLookAtMatrix(Vector3f(0, 0, 0), Vector3f(0, 0, -1), Vector3f(0, 1, 0));
-        proMat.BuildProjectionMatrixPerspectiveFovRH(PI / 6.f,   1.0f * GetWindowWidth() / GetWindowHeight(), 1.0f, 1000.f);
+        //proMat.BuildProjectionMatrixPerspectiveFovRH(PI / 6.f,   1.0f * GetWindowWidth() / GetWindowHeight(), 1.0f, 1000.f);
         proMat.BuildProjectionMatrixOrthoRH(5.0f *GetWindowWidth() / GetWindowHeight() , 5, 1.f, 1000.f); 
         Renderer->SetGlobalUniform("mvpMat", (proMat * vMat).m, sizeof(Matrix4x4f));
         return true;

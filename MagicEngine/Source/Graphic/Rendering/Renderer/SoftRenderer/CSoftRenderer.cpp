@@ -29,11 +29,13 @@ namespace Magic
     {
     }
 
-    void CSoftRenderer::SetFrontMode(FrontMode)
+    void CSoftRenderer::SetFrontMode(FrontMode frontMode)
     {
+        _FrontMode = frontMode;
     }
-    void CSoftRenderer::SetCullMode(CullMode)
+    void CSoftRenderer::SetCullMode(CullMode cullMode)
     {
+        _CullMode = cullMode;
     }
     void CSoftRenderer::SetRenderState(int stateBits, bool enable)
     {
@@ -206,8 +208,9 @@ namespace Magic
                     _Rasterizer->SetDrawBuffer(rt->GetColorBuffer(), _Width, _Height);
                     _Rasterizer->SetDepthBuffer(rt->GetDepthBuffer());
 
-                    _Rasterizer->DrawTriangle(trianglePos[0], trianglePos[1], trianglePos[2], triangleUV[0], triangleUV[1], triangleUV[2], 
-                        triangleColor[0], triangleColor[1], triangleColor[2]);
+                    //_Rasterizer->DrawTriangle(trianglePos[0], trianglePos[1], trianglePos[2], triangleUV[0], triangleUV[1], triangleUV[2], 
+                    //    triangleColor[0], triangleColor[1], triangleColor[2]);
+                    _Rasterizer->DrawTriangle(trianglePos, triangleNormal, triangleColor, triangleUV);
                     j = 0;
                 }
                 else

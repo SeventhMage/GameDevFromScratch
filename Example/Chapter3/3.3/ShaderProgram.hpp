@@ -18,7 +18,7 @@ namespace Magic
     {
         UniformMap globalU = *((UniformMap *)globalUniforms);
         UniformMap u = *((UniformMap *)uniforms);
-        Matrix4x4f mvpMat4(globalU["mvpMat"].data());
+        Matrix4x4f mvpMat4(u["mvpMat"].data());
 
         const Vector3f &inPosition = *(Vector3f *)(datas);
         const Vector3f &inColor = *(Vector3f *)(&inPosition + 1);
@@ -42,8 +42,7 @@ namespace Magic
         ISampler *sampler1 = samplers[0];
         Color albedo = sampler1->Sample(inUV);
 
-        return albedo;
-        //return inColor;
+        return albedo * inColor;
     }
 
     REGISTER_FPROGRAM(FragmentShader);

@@ -14,6 +14,8 @@ namespace Magic
     #define MAX(a, b) ((a) >= (b) ? (a) : (b))
     #define CLAMP(c, a, b) (MIN(MAX(c, a), b))
     #define FLOAT_EQUAL(a, b) ((a) - (b) > -FLOAT_EPSINON && (a) - (b) < FLOAT_EPSINON)
+
+
 }
 
 
