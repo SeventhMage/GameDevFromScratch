@@ -798,6 +798,7 @@ namespace Magic
 		}
 	}
 
+	//void CRasterizer::DrawTriangle(Vector4f p[3], Vector3f n[3], Color c[3], Vector2f t[3])
 	void CRasterizer::DrawTriangle(Vector4f p[3], Vector3f n[3], Color c[3], Vector2f t[3])
 	{
 		int i0 = 0;

@@ -106,6 +106,7 @@ namespace Magic
         (this->*_DrawFunctions[_PrimitiveType])(renderInput);
     }
 
+
     void CSoftRenderer::DrawPoints(IRenderInput *)
     {
     }
@@ -115,6 +116,55 @@ namespace Magic
     void CSoftRenderer::DrawLineStrip(IRenderInput *)
     {
     }
+
+    void CSoftRenderer::VertexProcess(IVertexAttribute *vertexAttribute, CSoftShaderProgram *shaderProgram,
+                                      const std::vector<unsigned char> &vertDatas, int triIndex, std::vector<unsigned char> &outVert, V2FDatas &data)
+    {
+        outVert.clear();
+
+        if (_OnVProgram)
+            _OnVProgram(&_GlobalUniforms, &shaderProgram->GetUniforms(), (float *)vertDatas.data(), outVert.data());
+
+        int size = 0;
+        if (vertexAttribute->HasPosition())
+        {
+            memcpy(data.position[triIndex].v, outVert.data(), sizeof(Vector4f));
+            size += sizeof(Vector4f);
+            if (data.position[triIndex].w > 0)
+            {
+                float invW = 1.0f / data.position[triIndex].w;
+                data.position[triIndex].x *= invW;
+                data.position[triIndex].y *= invW;
+                data.position[triIndex].z *= invW;
+            }
+        }
+
+        if (vertexAttribute->HasNormal())
+        {
+            memcpy(data.normal[triIndex].v, outVert.data() + size, sizeof(Vector3f));
+            size += sizeof(Vector3f);
+        }
+
+        if (vertexAttribute->HasColor())
+        {
+            memcpy(data.color[triIndex].c, outVert.data() + size, sizeof(Color));
+            size += sizeof(Color);
+        }
+
+        if (vertexAttribute->HasUV())
+        {
+            memcpy(data.uv[triIndex].v, outVert.data() + size, sizeof(Vector2f));
+            size += sizeof(Vector2f);
+        }
+    }
+
+    void CSoftRenderer::SwitchScreenSpace(V2FDatas &datas, int triIndex, int width, int height)
+    {
+
+        datas.position[triIndex].x = (datas.position[triIndex].x + 1.0f) * 0.5f * width;
+        datas.position[triIndex].y = (1 - datas.position[triIndex].y) * 0.5f * height;
+    }
+
     void CSoftRenderer::DrawTriangles(IRenderInput *renderInput)
     {
         IGeometry *geometry = renderInput->GetGeometry();
@@ -139,70 +189,57 @@ namespace Magic
         }
         _Rasterizer->SetFProgram(_OnFProgram, &_GlobalUniforms, &shaderProgram->GetUniforms(), hasTexture ? _sampler : nullptr);
 
+        CSoftRenderTarget *rt = _RenderTarget ? (CSoftRenderTarget *)_RenderTarget : _FinalRenderTarget;
+
         // todo
         if (indexBuffer && vertexBuffer)
         {
+            int indexCount = indexBuffer->GetIndexCount();
+
+            V2FDatas triDatas;
+            std::vector<unsigned char> outVert(vertexAttribute->GetOutSize());
+            int j = 0;
+            for (int i = 0; i < indexCount; ++i)
+            {
+                int index = indexBuffer->GetIndex(i);
+                std::vector<unsigned char> vertDatas = vertexBuffer->GetVertexData(index);
+
+                VertexProcess(vertexAttribute, shaderProgram, vertDatas, j, outVert, triDatas);
+                SwitchScreenSpace(triDatas, j, rt->GetWidth(), rt->GetHeight());
+
+                if (j == 2 && !Culling(Vector3f(triDatas.position[0].v), Vector3f(triDatas.position[1].v), Vector3f(triDatas.position[2].v)))
+                {
+                    // draw triangle
+                    _Rasterizer->SetDrawBuffer(rt->GetColorBuffer(), rt->GetWidth(), rt->GetHeight());
+                    _Rasterizer->SetDepthBuffer(rt->GetDepthBuffer());
+
+                    //_Rasterizer->DrawTriangle(trianglePos[0], trianglePos[1], trianglePos[2], triangleUV[0], triangleUV[1], triangleUV[2], 
+                    //    triangleColor[0], triangleColor[1], triangleColor[2]);
+                    _Rasterizer->DrawTriangle(triDatas.position, triDatas.normal, triDatas.color, triDatas.uv);
+                    j = 0;
+                }
+                else
+                {
+                    ++j;
+                }
+            }
         }
         else if (vertexBuffer)
         {
             int vertexCount = vertexBuffer->GetVertexCount();
             int j = 0;
-            Vector4f trianglePos[3];
-            Vector3f triangleNormal[3];
-            Color triangleColor[3];
-            Vector2f triangleUV[3];
+            V2FDatas triDatas;
             std::vector<unsigned char> outVert(vertexAttribute->GetOutSize());
             for (int i = 0; i < vertexCount; ++i)
             {
                 std::vector<unsigned char> vertDatas = vertexBuffer->GetVertexData(i);
-                outVert.clear();
 
-                if (_OnVProgram)
-                    _OnVProgram(&_GlobalUniforms, &shaderProgram->GetUniforms(), (float *)vertDatas.data(), outVert.data()); 
+                VertexProcess(vertexAttribute, shaderProgram, vertDatas, j, outVert, triDatas);
+                SwitchScreenSpace(triDatas, j, rt->GetWidth(), rt->GetHeight());
 
-
-                int size = 0;
-                if (vertexAttribute->HasPosition())
-                {
-                    memcpy(trianglePos[j].v, outVert.data(), sizeof(Vector4f));
-                    size += sizeof(Vector4f);
-                    if (trianglePos[j].w > 0)
-                    {
-                        float invW = 1.0f / trianglePos[j].w;
-                        trianglePos[j].x *= invW; 
-                        trianglePos[j].y *= invW; 
-                        trianglePos[j].z *= invW; 
-                    }
-                }
-                
-                if (vertexAttribute->HasNormal())
-                {
-                    memcpy(triangleNormal[j].v, outVert.data() + size, sizeof(Vector3f));
-                    size += sizeof(Vector3f);
-                }
-
-                if (vertexAttribute->HasColor())
-                {
-                    memcpy(triangleColor[j].c, outVert.data() + size, sizeof(Color));
-                    size += sizeof(Color);
-                }
-
-                if (vertexAttribute->HasUV())
-                {
-                    memcpy(triangleUV[j].v, outVert.data() + size, sizeof(Vector2f));
-                    size += sizeof(Vector2f);
-                }
-
-                if (j == 2 && !Culling(Vector3f(trianglePos[0].v), Vector3f(trianglePos[1].v), Vector3f(trianglePos[2].v)))
+                if (j == 2 && !Culling(Vector3f(triDatas.position[0].v), Vector3f(triDatas.position[1].v), Vector3f(triDatas.position[2].v)))
                 {
                     CSoftRenderTarget *rt = _RenderTarget ? (CSoftRenderTarget *)_RenderTarget : _FinalRenderTarget;
-
-                    //转换到屏幕空间
-                    for (int i = 0; i < 3; ++i)
-                    {
-                        trianglePos[i].x = (trianglePos[i].x + 1.0f) * 0.5f * rt->GetWidth();
-                        trianglePos[i].y = (1 - trianglePos[i].y) * 0.5f * rt->GetHeight();
-                    }
 
                     // draw triangle
                     _Rasterizer->SetDrawBuffer(rt->GetColorBuffer(), _Width, _Height);
@@ -210,13 +247,14 @@ namespace Magic
 
                     //_Rasterizer->DrawTriangle(trianglePos[0], trianglePos[1], trianglePos[2], triangleUV[0], triangleUV[1], triangleUV[2], 
                     //    triangleColor[0], triangleColor[1], triangleColor[2]);
-                    _Rasterizer->DrawTriangle(trianglePos, triangleNormal, triangleColor, triangleUV);
+                    _Rasterizer->DrawTriangle(triDatas.position, triDatas.normal, triDatas.color, triDatas.uv);
                     j = 0;
                 }
                 else
                 {
                     ++j;
                 }
+
             }
         }
     }

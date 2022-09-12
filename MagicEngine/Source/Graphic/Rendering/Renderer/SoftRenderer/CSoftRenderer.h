@@ -40,6 +40,14 @@ namespace Magic
         virtual ITexture *CreateTexture(const char *fullPath) const;
     private:
 
+        typedef struct
+        {
+            Vector4f position[3];
+            Vector3f normal[3];
+            Color color[3];
+            Vector2f uv[3];
+        }V2FDatas;
+
         typedef void (CSoftRenderer::*DrawFunction)(IRenderInput *);
         void DrawPoints(IRenderInput *);
         void DrawLines(IRenderInput *);
@@ -51,6 +59,10 @@ namespace Magic
         void DrawBuffer();
 
         bool Culling(const Vector3f &v0, const Vector3f &v1, const Vector3f &v2);
+
+        void VertexProcess(IVertexAttribute *vertexAttribute, CSoftShaderProgram *shaderProgram, const std::vector<unsigned char> &vertDatas, 
+            int triIndex, std::vector<unsigned char> &outVert, V2FDatas &datas);
+        void SwitchScreenSpace(V2FDatas &datas, int triIndex, int width, int height);
     private:
         IRenderContext *_RenderContext;
         CRasterizer *_Rasterizer;

@@ -26,4 +26,9 @@ namespace Magic
     {
 
     }
+
+    unsigned int CSoftIndexBuffer::GetIndex(int i)
+    {
+        return *((unsigned int *)_Buffer + i);
+    }
 }

@@ -14,6 +14,7 @@ namespace Magic
         virtual inline int GetIndexCount() const { return _IndexCount; }
         virtual void Prepare();
 
+        unsigned int GetIndex(int i);
     private:
         unsigned char *_Buffer;
         int _Size;
