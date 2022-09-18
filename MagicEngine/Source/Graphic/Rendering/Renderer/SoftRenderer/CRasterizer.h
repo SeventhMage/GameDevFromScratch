@@ -1,6 +1,8 @@
 #ifndef _MAGIC_C_RASTERIZER_H_
 #define _MAGIC_C_RASTERIZER_H_
 
+#include <functional>
+
 #include "Foundation/Math/Triangle.hpp"
 #include "Foundation/Math/Vector4.hpp"
 #include "Foundation/Math/Vector2.hpp"
@@ -9,17 +11,6 @@
 
 namespace Magic
 {
-    struct Vertex
-    {
-        Vector4f position;
-    };
-    struct VertexPNCT : Vertex
-    {
-        Vector3f normal;
-        Color color;
-        Vector2f texCoord0;
-    };
-
     class CRasterizer
     {
     public:
@@ -38,6 +29,9 @@ namespace Magic
         void DrawPixel(int x, int y, const Color &c);
 
         void DrawTriangle(Vector4f positions[3], Vector3f normals[3], Color colors[3], Vector2f texCoords[3]);
+
+        void SetFragmentProcess(const std::function<bool(float *, int, int, float)> &func) { _FragmentProcess = func; }
+        void SetBufferWidthHeight(int width, int height);
     private:
         void DrawTopTriangle(const Vector4f &p0, const Vector2f &t0, const Color &c0,
                              const Vector4f &p1, const Vector2f &t1, const Color &c1,
@@ -62,7 +56,7 @@ namespace Magic
         }EdgeBuffer;
 
         void DrawEdgeBuffer(int i0, int i1, Vector4f positions[3], Vector3f normals[3], Color colors[3], Vector2f texCoords[3], EdgeBuffer *edgeBuffer);
-        void FillColor(unsigned int *addr, float *zbuffer, const EdgeBuffer &minEdge, const EdgeBuffer &maxEdge);
+        void FillColor(const EdgeBuffer &minEdge, const EdgeBuffer &maxEdge, int y);
 
     private:
         unsigned int *_pDrawBuffer;
@@ -77,6 +71,8 @@ namespace Magic
         UniformMap *_pGlobalUniforms;
         UniformMap *_pUniforms;
         ISampler **_pSamplers;
+
+        std::function<bool(float *, int, int, float)> _FragmentProcess;
     };
 }
 

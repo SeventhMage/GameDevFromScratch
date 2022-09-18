@@ -73,5 +73,6 @@ namespace Magic
 
     typedef Vector4<float> Vector4f;
     typedef Vector4<double> Vector4d;
+    typedef Vector4<int> Vector4i;
 }
 #endif

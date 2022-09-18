@@ -3,15 +3,20 @@
 #include "CSoftVertexBuffer.h"
 #include "CSoftRenderTarget.h"
 #include "Foundation/Memory/Memory.h"
+#include "Foundation/Math/Color.hpp"
 
 #include <iostream>
 
 namespace Magic
 {
     CSoftRenderer::CSoftRenderer(int width, int height)
-        : CRenderer(width, height), _RenderContext(nullptr), _Rasterizer(new CRasterizer()), 
-            _FinalRenderTarget(new CSoftRenderTarget(width, height)), _PrimitiveType(PrimitiveType::TRIANGLES),
-            _ClearColor(1, 0, 0, 0), _ClearDepth(1.0f), _FrontMode(FrontMode::CCW), _CullMode(CullMode::CULL_BACK)
+        : CRenderer(width, height), _RenderContext(nullptr), _Rasterizer(new CRasterizer()),
+          _FinalRenderTarget(new CSoftRenderTarget(width, height)), _PrimitiveType(PrimitiveType::TRIANGLES),
+          _ClearColor(1, 0, 0, 0), _ClearDepth(1.0f), _OnVProgram(nullptr), _OnFProgram(nullptr), _FrontMode(FrontMode::CCW), _CullMode(CullMode::CULL_BACK),
+          _RenderStateBits(RenderState::DEFAULT), _ScissorRect(0, 0, width, height), _StencilCmpFunc(CompareFunction::ALWAYS),
+          _StencilRef(0), _StencilMask(0xFFFFFFFF), _StencilFailOpt(StencilOperation::KEEP), _StencilZFailOpt(StencilOperation::KEEP),
+          _StencilZPassOpt(StencilOperation::KEEP), _DepthCmpFunc(CompareFunction::LESS), _AlphaCmpFunc(CompareFunction::LESS),
+          _AlphaCmpValue(1.f), _SrcBlendFactor(BlendFactor::SRC_ALPHA), _DstBlendFactor(BlendFactor::ONE_MINUS_SRC_ALPHA), _BlendOpt(BlendOperation::ADD)
     {
         for (int i = 0; i < CRenderInput::MAX_TEXTURE_NUM; ++i)
         {
@@ -23,6 +28,37 @@ namespace Magic
         _DrawFunctions[3] = &CSoftRenderer::DrawTriangles;
         _DrawFunctions[4] = &CSoftRenderer::DrawTriangleFan;
         _DrawFunctions[5] = &CSoftRenderer::DrawTriangleStrip;
+
+        _Compare[CompareFunction::NEVER] = [](float s, float d)->bool{ return false; };
+        _Compare[CompareFunction::LESS] = [](float s, float d)->bool{ return s < d; };
+        _Compare[CompareFunction::LEQUAL] = [](float s, float d)->bool{ return s <= d; };
+        _Compare[CompareFunction::GREATER] = [](float s, float d)->bool{ return s > d; };
+        _Compare[CompareFunction::GEQUAL] = [](float s, float d)->bool{ return s >= d; };
+        _Compare[CompareFunction::NEQUAL] = [](float s, float d)->bool{ return s != d; };
+        _Compare[CompareFunction::ALWAYS] = [](float s, float d)->bool{ return true; };
+
+        _StencilOpt[StencilOperation::KEEP] = [](unsigned int *ptr, int ref) { };
+        _StencilOpt[StencilOperation::MAKE_ZERO] = [](unsigned int *ptr, int ref) { *ptr = 0; };
+        _StencilOpt[StencilOperation::REPLACE] = [](unsigned int *ptr, int ref) { *ptr = ref;};
+        _StencilOpt[StencilOperation::INCREMENT] = [](unsigned int *ptr, int ref) { ++(*ptr);  };
+        _StencilOpt[StencilOperation::DECREMENT] = [](unsigned int *ptr, int ref) { --(*ptr); };
+        _StencilOpt[StencilOperation::INVERT] = [](unsigned int *ptr, int ref) { *ptr = ~(*ptr); };
+
+
+        _Blend[BlendOperation::ADD] = [](const Color &s, const Color &d)->Color{ return s + d; };
+        _Blend[BlendOperation::SUB] = [](const Color &s, const Color &d)->Color{ return s - d; };
+        _Blend[BlendOperation::REVSUB] = [](const Color &s, const Color &d)->Color{ return d - s; };
+
+        _BlendValue[BlendFactor::ONE] = [](const Color &s, const Color &d)->Color{ return Color(1.f, 1.f,1.f, 1.f); };
+        _BlendValue[BlendFactor::ZERO] = [](const Color &s, const Color &d)->Color{ return Color(0.f, 0.f, 0.f, 0.f); };
+        _BlendValue[BlendFactor::SRC_COLOR] = [](const Color &s,const Color &d )->Color{ return Color(1.f, s.r, s.g, s.b); };
+        _BlendValue[BlendFactor::SRC_ALPHA] = [](const Color &s, const Color &d)->Color{ return Color(s.a, s.a, s.a, s.a); };
+        _BlendValue[BlendFactor::DST_COLOR] = [](const Color &s, const Color &d)->Color{ return Color(1.f, d.r, d.g, d.b); };
+        _BlendValue[BlendFactor::DST_ALPHA] = [](const Color &s, const Color &d)->Color{ return Color(d.a, d.a, d.a, d.a); };
+        _BlendValue[BlendFactor::ONE_MINUS_SRC_COLOR] = [](const Color &s, const Color &d)->Color{ return Color(1.f, 1.f - s.r, 1.f - s.g, 1.f - s.b); };
+        _BlendValue[BlendFactor::ONE_MINUS_SRC_ALPHA] = [](const Color &s, const Color &d)->Color{ return Color(1.f, 1.f - s.a, 1.f - s.a, 1.f - s.a); };
+        _BlendValue[BlendFactor::ONE_MINUS_DST_COLOR] = [](const Color &s, const Color &d)->Color{ return Color(1.f, 1.f - d.r, 1.f - d.g, 1.f - d.b); };
+        _BlendValue[BlendFactor::ONE_MINUS_DST_ALPHA] = [](const Color &s, const Color &d)->Color{ return Color(1.f, 1.f - d.a, 1.f - d.a, 1.f - d.a); };
     }
 
     CSoftRenderer::~CSoftRenderer()
@@ -37,18 +73,54 @@ namespace Magic
     {
         _CullMode = cullMode;
     }
-    void CSoftRenderer::SetRenderState(int stateBits, bool enable)
+    void CSoftRenderer::SetRenderState(int stateBits)
     {
+        _RenderStateBits &= stateBits;
     }
-    void CSoftRenderer::SetDepthFunc(CompareFunction)
+
+    void CSoftRenderer::ClearRenderState(int stateBits)
     {
+        _RenderStateBits &= ~stateBits;
+    }
+
+    void CSoftRenderer::SetScissor(int x, int y, int width, int height)
+    {
+        _ScissorRect.x = x;
+        _ScissorRect.y = y;
+        _ScissorRect.z = width;
+        _ScissorRect.w = height;
+    }
+
+    void CSoftRenderer::SetDepthFunc(CompareFunction cmpFunc)
+    {
+        _DepthCmpFunc = cmpFunc;
     }
     void CSoftRenderer::SetStencilFunc(CompareFunction func, int reference, int mask)
     {
+        _StencilCmpFunc = func;
+        _StencilRef = reference;
+        _StencilMask = mask;
     }
     void CSoftRenderer::SetStencilOperation(StencilOperation stencilTestFail, StencilOperation depthTestFail, StencilOperation stencilDepthPass)
     {
+        _StencilFailOpt = stencilTestFail;
+        _StencilZFailOpt = depthTestFail;
+        _StencilZPassOpt = stencilDepthPass;
     }
+
+    void CSoftRenderer::SetAlphaFunc(CompareFunction cmpFunc, float value)
+    {
+        _AlphaCmpFunc = cmpFunc;
+        _AlphaCmpValue = value;
+    }
+
+    void CSoftRenderer::SetBlendFunc(BlendFactor src, BlendFactor dst, BlendOperation op)
+    {
+        _SrcBlendFactor = src;
+        _DstBlendFactor = dst;
+        _BlendOpt = op;
+    }
+
     void CSoftRenderer::SetClearColor(float r, float g, float b)
     {
         _ClearColor.r = r;
@@ -105,7 +177,6 @@ namespace Magic
         renderInput->Prepare();
         (this->*_DrawFunctions[_PrimitiveType])(renderInput);
     }
-
 
     void CSoftRenderer::DrawPoints(IRenderInput *)
     {
@@ -165,6 +236,102 @@ namespace Magic
         datas.position[triIndex].y = (1 - datas.position[triIndex].y) * 0.5f * height;
     }
 
+    bool CSoftRenderer::ScissorTest(int x, int y)
+    {
+        if (_RenderStateBits & RenderState::SCISSOR_TEST)
+        {
+            if (x < _ScissorRect.x || x + _ScissorRect.x > _ScissorRect.z || y < _ScissorRect.y || y + _ScissorRect.y > _ScissorRect.w)
+                return false;
+        }
+        return true;
+    }
+
+    bool CSoftRenderer::DepthStencilTest(int x, int y, float invz)
+    {
+        CSoftRenderTarget *rt = _RenderTarget ? (CSoftRenderTarget *)_RenderTarget : _FinalRenderTarget;
+        int width = rt->GetWidth();
+        //模板测试
+
+        unsigned int *sptr = nullptr;
+        if (_RenderStateBits & RenderState::STENCIL_TEST)
+        {
+            unsigned int *&sbuffer = rt->GetStencilBuffer();
+            sptr = sbuffer + ((y - 1) * width + x);
+            if (!_Compare[_StencilCmpFunc](*sptr & _StencilMask, _StencilRef))
+            {
+                _StencilOpt[_StencilFailOpt](sptr, _StencilRef);
+                return false;
+            }
+        }
+
+        float *zptr = nullptr;
+        if (_RenderStateBits & RenderState::DEPTH_TEST)
+        {
+            float *&zbuffer = rt->GetDepthBuffer();
+            zptr = zbuffer + ((y - 1) * width + x);
+            if (!_Compare[_DepthCmpFunc](invz, *zptr))
+            {
+                if (sptr)
+                {
+                    _StencilOpt[_StencilZFailOpt](sptr, _StencilRef);
+                }
+                return false;
+            }
+            else
+            {
+                if (sptr)
+                {
+                    _StencilOpt[_StencilZPassOpt](sptr, _StencilRef);
+                }
+            }
+        }
+        else
+        {
+            if (sptr)
+            {
+                _StencilOpt[_StencilZPassOpt](sptr, _StencilRef);
+            }
+        }
+
+        if (_RenderStateBits & RenderState::DEPTH_WRITE)
+        {
+            if (zptr)
+                *zptr = invz;
+        }
+
+        return true;
+    }
+
+    bool CSoftRenderer::AlphaTest(int x, int y, float a)
+    {
+        if (_RenderStateBits & RenderState::ALPHA_TEST)
+        {
+            CSoftRenderTarget *rt = _RenderTarget ? (CSoftRenderTarget *)_RenderTarget : _FinalRenderTarget;
+            int width = rt->GetWidth();
+
+            unsigned int *&cbuffer = rt->GetColorBuffer();
+            if (!_Compare[_AlphaCmpFunc](a, cbuffer[(y - 1) * width + x])) 
+                return false;
+        }
+
+        return true;
+    }
+
+    void CSoftRenderer::Blend(int x, int y, const Color &src)
+    {
+        CSoftRenderTarget *rt = _RenderTarget ? (CSoftRenderTarget *)_RenderTarget : _FinalRenderTarget;
+        int width = rt->GetWidth();
+
+        unsigned int *&cbuffer = rt->GetColorBuffer();
+        unsigned int *cptr = cbuffer + (y - 1) * width + x;
+        Color dst(*cptr);
+
+        Color srcValue = src * _BlendValue[_SrcBlendFactor](src, dst);
+        Color dstValue = dst * _BlendValue[_DstBlendFactor](src, dst);
+
+        *cptr = _Blend[_BlendOpt](srcValue, dstValue).Get32BitColor();
+    }
+
     void CSoftRenderer::DrawTriangles(IRenderInput *renderInput)
     {
         IGeometry *geometry = renderInput->GetGeometry();
@@ -187,9 +354,34 @@ namespace Magic
                 hasTexture = true;
             }
         }
-        _Rasterizer->SetFProgram(_OnFProgram, &_GlobalUniforms, &shaderProgram->GetUniforms(), hasTexture ? _sampler : nullptr);
+        //_Rasterizer->SetFProgram(_OnFProgram, &_GlobalUniforms, &shaderProgram->GetUniforms(), hasTexture ? _sampler : nullptr);
 
         CSoftRenderTarget *rt = _RenderTarget ? (CSoftRenderTarget *)_RenderTarget : _FinalRenderTarget;
+
+        _Rasterizer->SetFragmentProcess([=](float *datas, int x, int y, float invz) -> bool
+                                        {
+            //裁剪测试
+            if (!ScissorTest(x, y))
+                return false;
+
+            //深度模板测试
+            if (!DepthStencilTest(x, y, invz))
+                return false;
+
+            
+            Color color = _OnFProgram(&_GlobalUniforms, &shaderProgram->GetUniforms(), hasTexture ? _sampler : nullptr, datas);
+
+            // alpha测试
+            if (!AlphaTest(x, y, color.a))
+                return false;
+
+            //混合
+            Blend(x, y, color);
+
+            return true; });
+
+
+        _Rasterizer->SetBufferWidthHeight(rt->GetWidth(), rt->GetHeight());
 
         // todo
         if (indexBuffer && vertexBuffer)
@@ -207,15 +399,18 @@ namespace Magic
                 VertexProcess(vertexAttribute, shaderProgram, vertDatas, j, outVert, triDatas);
                 SwitchScreenSpace(triDatas, j, rt->GetWidth(), rt->GetHeight());
 
-                if (j == 2 && !Culling(Vector3f(triDatas.position[0].v), Vector3f(triDatas.position[1].v), Vector3f(triDatas.position[2].v)))
+                if (j == 2)
                 {
-                    // draw triangle
-                    _Rasterizer->SetDrawBuffer(rt->GetColorBuffer(), rt->GetWidth(), rt->GetHeight());
-                    _Rasterizer->SetDepthBuffer(rt->GetDepthBuffer());
+                    if (!Culling(Vector3f(triDatas.position[0].v), Vector3f(triDatas.position[1].v), Vector3f(triDatas.position[2].v)))
+                    {
+                        // draw triangle
+                        //_Rasterizer->SetDrawBuffer(rt->GetColorBuffer(), rt->GetWidth(), rt->GetHeight());
+                        // _Rasterizer->SetDepthBuffer(rt->GetDepthBuffer());
+                        //  _Rasterizer->DrawTriangle(triDatas.position[0], triDatas.position[1], triDatas.position[2], triDatas.uv[0], triDatas.uv[1], triDatas.uv[2],
+                        //     triDatas.color[0], triDatas.color[1], triDatas.color[2]);
 
-                    //_Rasterizer->DrawTriangle(trianglePos[0], trianglePos[1], trianglePos[2], triangleUV[0], triangleUV[1], triangleUV[2], 
-                    //    triangleColor[0], triangleColor[1], triangleColor[2]);
-                    _Rasterizer->DrawTriangle(triDatas.position, triDatas.normal, triDatas.color, triDatas.uv);
+                        _Rasterizer->DrawTriangle(triDatas.position, triDatas.normal, triDatas.color, triDatas.uv);
+                    }
                     j = 0;
                 }
                 else
@@ -245,8 +440,8 @@ namespace Magic
                     _Rasterizer->SetDrawBuffer(rt->GetColorBuffer(), _Width, _Height);
                     _Rasterizer->SetDepthBuffer(rt->GetDepthBuffer());
 
-                    //_Rasterizer->DrawTriangle(trianglePos[0], trianglePos[1], trianglePos[2], triangleUV[0], triangleUV[1], triangleUV[2], 
-                    //    triangleColor[0], triangleColor[1], triangleColor[2]);
+                    // _Rasterizer->DrawTriangle(triDatas.position[0], triDatas.position[1], triDatas.position[2], triDatas.uv[0], triDatas.uv[1], triDatas.uv[2],
+                    //    triDatas.color[0], triDatas.color[1], triDatas.color[2]);
                     _Rasterizer->DrawTriangle(triDatas.position, triDatas.normal, triDatas.color, triDatas.uv);
                     j = 0;
                 }
@@ -254,7 +449,6 @@ namespace Magic
                 {
                     ++j;
                 }
-
             }
         }
     }
@@ -270,10 +464,10 @@ namespace Magic
         if (_CullMode == CullMode::CULL_NONE)
             return false;
         Vector3f v01 = v1 - v0;
-        Vector3f v02  = v2 - v0;
+        Vector3f v02 = v2 - v0;
         Vector3f vNormal = _FrontMode == FrontMode::CCW ? v01.CrossProduct(v02) : v02.CrossProduct(v01);
         vNormal.Normalize();
-        Vector3f vCamDir(0, 0, 1);
+        Vector3f vCamDir(0, 0, -1);
         return _CullMode == CullMode::CULL_BACK ? (vNormal.DotProduct(vCamDir) < 0) : (vNormal.DotProduct(vCamDir) > 0);
     }
 

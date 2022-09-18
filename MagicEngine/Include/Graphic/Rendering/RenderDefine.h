@@ -17,13 +17,15 @@ namespace Magic
         CULL_FRONT,
     };
 
-    enum ERenderState
+    enum RenderState
     {
-        ALPHA_TEST = 0x00000001,
-        DEPTH_TEST = 0x00000001 << 1,
-        STENCIL_TEST = 0x00000001 << 2,
+        SCISSOR_TEST = 0x00000001,
+        STENCIL_TEST = 0x00000001 << 1,
+        DEPTH_TEST = 0x00000001 << 2,
         DEPTH_WRITE = 0x00000001 << 3,
-        STENCIL_WRITE = 0x00000001 << 4,
+        ALPHA_TEST = 0x00000001 << 4,
+
+        DEFAULT = DEPTH_TEST | DEPTH_WRITE,
     };
 
     enum BufferBit
@@ -36,31 +38,60 @@ namespace Magic
 
     enum CompareFunction
     {
-        NEVER = 0x00000001,
-        LESS = 0x00000001 << 2,
-        GREATER = 0x00000001 << 3,
-        EQUAL = 0x00000001 << 4,
-        NEQUAL = 0x00000001 << 5,
-        LEQUAL = 0x00000001 << 6,
-        GEQUAL = 0x00000001 << 7,
-        ALWAYS = 0x00000001 << 8,
+        NEVER = 0,
+        LESS,
+        GREATER,
+        EQUAL,
+        NEQUAL,
+        LEQUAL,
+        GEQUAL,
+        ALWAYS,
+        
+        CF_COUNT,
     };
 
     enum TestState
     {
-        DEPTH_FAIL,
         STENCIL_FAIL,
+        DEPTH_FAIL,
         STENCIL_DEPTH_PASS,
     };
 
     enum StencilOperation
     {
-        KEEP = 0x00000001,
-        ZERO = 0x00000001 << 1,
-        REPLACE = 0x00000001 << 2,
-        INCREMENT = 0x00000001 << 3,
-        DECREMENT = 0x00000001 << 4,
-        INVERT = 0x00000001 << 5,
+        KEEP = 0,
+        MAKE_ZERO,
+        REPLACE,
+        INCREMENT,
+        DECREMENT,
+        INVERT,
+
+        SO_COUNT,
+    };
+
+    enum BlendFactor
+    {
+        ONE, 
+        ZERO,
+        SRC_COLOR,
+        SRC_ALPHA,
+        DST_COLOR,
+        DST_ALPHA,
+        ONE_MINUS_SRC_COLOR,
+        ONE_MINUS_SRC_ALPHA,
+        ONE_MINUS_DST_COLOR,
+        ONE_MINUS_DST_ALPHA,
+
+        BF_COUNT,
+    };
+
+    enum BlendOperation
+    {
+        ADD,
+        SUB,
+        REVSUB,
+
+        BO_COUNT,
     };
 
     enum PrimitiveType
@@ -71,8 +102,7 @@ namespace Magic
         TRIANGLES,
         TRIANGLE_FAN,
         TRIANGLE_STRIP,
-
-        Count,
+        PT_COUNT,
     };
 
     enum MultisamplingType

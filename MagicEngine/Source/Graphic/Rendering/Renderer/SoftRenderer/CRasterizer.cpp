@@ -427,7 +427,7 @@ namespace Magic
 		}
 	}
 
-	void CRasterizer::FillColor(unsigned int *addr, float *zbuffer, const EdgeBuffer &minEdge, const EdgeBuffer &maxEdge)
+	void CRasterizer::FillColor(const EdgeBuffer &minEdge, const EdgeBuffer &maxEdge, int y)
 	{
 		int count = maxEdge.X - minEdge.X;
 		if (count < 0)
@@ -442,29 +442,33 @@ namespace Magic
 		Color c = minEdge.Color;
 		Vector2f dt = (maxEdge.TexCoords - minEdge.TexCoords) * invcount;
 		Vector2f t = minEdge.TexCoords;
-
+		Vector3f dn = (maxEdge.Normal - minEdge.Normal) * invcount;
+		Vector3f n = minEdge.Normal;
 
 		float realz;
 
 		for (int i = 0; i < count; ++i)
 		{
-			if ((x >= 0) && (invz < *zbuffer) && (invz >= -1 && invz <= 1))
+			if ((x >= 0) && (invz >= -1 && invz <= 1))
 			{
 				realz = 1.f / invw;
-				// color + uv
-				static float datas[4 + 2];
+				// color + uv + normal 
+				static float datas[4 + 2 + 3];
 				Color &color = *((Color *)datas);
 				color.a = c.a * realz;
 				color.r = c.r * realz;
 				color.g = c.g * realz;
 				color.b = c.b * realz;
+
 				Vector2f &texCoord = *(Vector2f *)(&color + 1);
 				texCoord.x = t.x * realz;
 				texCoord.y = t.y * realz;
-				// fragment shader
-				auto result = _OnFProgram(_pGlobalUniforms, _pUniforms, _pSamplers, datas);
-				*addr = result.Get32BitColor();
-				*zbuffer = invz;
+				Vector3f &normal = *(Vector3f *)(&texCoord + 1);
+				normal.x = n.x * realz;
+				normal.y = n.y * realz;
+				normal.z = n.z * realz;
+
+				_FragmentProcess(datas, x, y, invz);
 			}
 
 			x += 1;
@@ -480,12 +484,9 @@ namespace Magic
 			c.b += dc.b;
 			t.x = t.x + dt.x;
 			t.y = t.y + dt.y;
-
-			if (x >= 0)
-			{
-				++zbuffer;
-				++addr;
-			}
+			n.x += dn.x;
+			n.y += dn.y;
+			n.z += dn.z;
 		}
 	}
 
@@ -500,6 +501,11 @@ namespace Magic
 	void CRasterizer::SetDrawBuffer(unsigned int *pDrawBuffer, int width, int height)
 	{
 		_pDrawBuffer = pDrawBuffer;
+		SetBufferWidthHeight(width, height);
+	}
+
+	void CRasterizer::SetBufferWidthHeight(int width, int height)
+	{
 		if (_bufferHeight < height)
 		{
 			SAFE_DELETE(_pMinEdgeBuffer);
@@ -644,7 +650,7 @@ namespace Magic
 		float dx01 = (p[i1].x - p[i0].x) / (p[i1].y - p[i0].y);
 		float rate = sqrt(1 + dx01 * dx01);
 		
-		float invDis = Utils::InvSqrt(dx * dx + dy * dy);
+		float invDis = p[i1].getInvDistanceFrom(p[i0]);
 		float invdz = (invz1 - invz0) * invDis * rate;
 		float invdw = (invw1 - invw0) * invDis * rate;
 		float decz = invz0;
@@ -856,7 +862,7 @@ namespace Magic
 			//p1点在扫描线位置与p0p2的交点x
 			float newX = p[i0].x + (p[i2].x - p[i0].x) * (p[i1].y - p[i0].y) / (p[i2].y - p[i0].y);
 
-			if (p[i1].x < newX)
+			if (p[i1].x <= newX)
 			{
 				DrawEdgeBuffer(i0, i1, p, n, c, t, _pMinEdgeBuffer);
 				DrawEdgeBuffer(i1, i2, p, n, c, t, _pMinEdgeBuffer);
@@ -878,24 +884,7 @@ namespace Magic
 			EdgeBuffer &minEdge = _pMinEdgeBuffer[y];
 			EdgeBuffer &maxEdge = _pMaxEdgeBuffer[y];
 
-			unsigned int offset = (unsigned int)(MAX(minEdge.X, 0) + (y - 1) * _bufferWidth);
-			unsigned int *addr = (unsigned int *)_pDrawBuffer + offset;
-			if (_pDepthBuffer)
-			{
-				float *zbuffer = _pDepthBuffer + offset;
-				if (_pSamplers)
-				{
-					FillColor(addr, zbuffer, minEdge, maxEdge);
-				}
-				else
-				{
-					FillColor(addr, zbuffer, minEdge, maxEdge);
-				}
-			}
-			else
-			{
-				FillColor(addr, nullptr, minEdge, maxEdge);
-			}
+			FillColor(minEdge, maxEdge, y);
 		}
 	}
 }

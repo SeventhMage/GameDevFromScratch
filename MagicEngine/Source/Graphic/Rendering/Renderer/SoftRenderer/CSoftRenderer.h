@@ -2,6 +2,7 @@
 #define _MAGIC_C_SOFT_RENDERER_H_
 
 #include <vector>
+#include <functional>
 
 #include "Graphic/Rendering/CRenderer.h"
 #include "Graphic/Rendering/CRenderInput.h"
@@ -24,10 +25,14 @@ namespace Magic
         virtual RendererType GetRendererType() const { return RendererType::Software; }
         virtual void SetFrontMode(FrontMode) override;
         virtual void SetCullMode(CullMode) override;
-        virtual void SetRenderState(int stateBits, bool enable) override;
-        virtual void SetDepthFunc(CompareFunction) override;
+        virtual void SetRenderState(int stateBits) override;
+        virtual void ClearRenderState(int stateBits) override;
+        virtual void SetScissor(int x, int y, int width, int height) override;
         virtual void SetStencilFunc(CompareFunction func, int reference, int mask) override;
         virtual void SetStencilOperation(StencilOperation stencilTestFail, StencilOperation depthTestFail, StencilOperation stencilDepthPass) override;
+        virtual void SetDepthFunc(CompareFunction) override;
+        virtual void SetAlphaFunc(CompareFunction cmpFunc, float value);
+        virtual void SetBlendFunc(BlendFactor src, BlendFactor dst, BlendOperation op) override;
         virtual void SetClearColor(float r, float g, float b) override;
         virtual void SetClearDepth(float depth) override;
         virtual void Clear(int bufferBits) override;
@@ -36,8 +41,9 @@ namespace Magic
         virtual void Draw(IRenderInput *) override;
         virtual void End() override;
         virtual void OnViewportChange() override;
-        virtual IShaderProgram *CreateShaderProgram(const char *vertShader, const char *fragShader) const;
-        virtual ITexture *CreateTexture(const char *fullPath) const;
+        virtual IShaderProgram *CreateShaderProgram(const char *vertShader, const char *fragShader) const override;
+        virtual ITexture *CreateTexture(const char *fullPath) const override;
+
     private:
 
         typedef struct
@@ -63,12 +69,24 @@ namespace Magic
         void VertexProcess(IVertexAttribute *vertexAttribute, CSoftShaderProgram *shaderProgram, const std::vector<unsigned char> &vertDatas, 
             int triIndex, std::vector<unsigned char> &outVert, V2FDatas &datas);
         void SwitchScreenSpace(V2FDatas &datas, int triIndex, int width, int height);
+
+        bool ScissorTest(int x, int y);
+        bool DepthStencilTest(int x, int y, float invz); 
+        bool AlphaTest(int x, int y, float a);
+        void Blend(int x, int y, const Color &src);
     private:
         IRenderContext *_RenderContext;
         CRasterizer *_Rasterizer;
         CSoftRenderTarget *_FinalRenderTarget;
         PrimitiveType _PrimitiveType;
-        DrawFunction _DrawFunctions[PrimitiveType::Count];
+        DrawFunction _DrawFunctions[PrimitiveType::PT_COUNT];
+
+        ISampler *_sampler[CRenderInput::MAX_TEXTURE_NUM];
+
+        std::function<bool(float, float)> _Compare[CompareFunction::CF_COUNT];
+        std::function<void(unsigned int *, int)> _StencilOpt[StencilOperation::SO_COUNT];
+        std::function<Color(const Color&, const Color&)> _Blend[BlendOperation::BO_COUNT];
+        std::function<Color(const Color&, const Color&)> _BlendValue[BlendFactor::BF_COUNT];
 
         Color _ClearColor;
         float _ClearDepth;
@@ -79,7 +97,26 @@ namespace Magic
         FrontMode _FrontMode;
         CullMode _CullMode;
         
-        ISampler *_sampler[CRenderInput::MAX_TEXTURE_NUM];
+
+        int _RenderStateBits;
+        Vector4i _ScissorRect;
+
+        CompareFunction _StencilCmpFunc;
+        int _StencilRef;
+        int _StencilMask;
+        StencilOperation _StencilFailOpt;
+        StencilOperation _StencilZFailOpt;
+        StencilOperation _StencilZPassOpt;
+
+        CompareFunction _DepthCmpFunc;
+
+        CompareFunction  _AlphaCmpFunc;
+        float _AlphaCmpValue;
+
+        BlendFactor _SrcBlendFactor;
+        BlendFactor _DstBlendFactor;
+        BlendOperation _BlendOpt;
+
 
     };
 }

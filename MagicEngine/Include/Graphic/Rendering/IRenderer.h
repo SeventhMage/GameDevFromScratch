@@ -28,10 +28,14 @@ namespace Magic
         virtual RendererType GetRendererType() const = 0;
         virtual void SetFrontMode(FrontMode) = 0;
         virtual void SetCullMode(CullMode) = 0;
-        virtual void SetRenderState(int stateBits, bool enable) = 0;
-        virtual void SetDepthFunc(CompareFunction) = 0;
+        virtual void SetRenderState(int stateBits) = 0;
+        virtual void ClearRenderState(int stateBits) = 0;
+        virtual void SetScissor(int x, int y, int width, int height) = 0;
         virtual void SetStencilFunc(CompareFunction func, int reference, int mask) = 0;
         virtual void SetStencilOperation(StencilOperation stencilTestFail, StencilOperation depthTestFail, StencilOperation stencilDepthPass) = 0;
+        virtual void SetDepthFunc(CompareFunction cmpFunc) = 0;
+        virtual void SetAlphaFunc(CompareFunction cmpFunc, float value) = 0;
+        virtual void SetBlendFunc(BlendFactor src, BlendFactor dst, BlendOperation op) = 0;
         virtual void SetClearColor(float r, float g, float b) = 0;
         virtual void SetClearDepth(float depth) = 0;
         virtual void Clear(int bufferBits = BufferBit::ALL) = 0;

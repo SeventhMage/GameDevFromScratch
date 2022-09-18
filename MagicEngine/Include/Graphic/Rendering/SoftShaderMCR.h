@@ -46,4 +46,8 @@ namespace Magic
 
 }
 
+#define V2F_COLOR(datas) *((Color *)datas)
+#define V2F_UV(datas) *((Vector2f *)((char *)datas + sizeof(Color)))
+#define V2F_NORMAL(datas) *((Color *)(char *)datas + sizeof(Color) + sizeof(Vector2f)))
+
 #endif
