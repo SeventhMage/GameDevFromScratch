@@ -33,6 +33,7 @@ namespace Magic
 		~CTGAImage();
 
 		virtual bool Load(const char *fullPath);
+		virtual bool Save(const char *fullPath){ return false; }
 		virtual unsigned char *GetData() const { return _pData; }
 		virtual Format GetFormat() const { return _Format; }
 		virtual unsigned long GetImageSize() const { return _ImageSize; }

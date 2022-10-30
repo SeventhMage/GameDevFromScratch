@@ -2,8 +2,8 @@
 #define _MAGIC_I_MODEL_H_
 
 #include "Foundation/Object/IComponent.h"
-#include "Graphic/Rendering/IMesh.h"
-#include "Graphic/Rendering/IMaterial.h"
+#include "Resource/IMesh.h"
+#include "Resource/IMaterial.h"
 #include "Graphic/Rendering/IRenderer.h"
 
 namespace Magic

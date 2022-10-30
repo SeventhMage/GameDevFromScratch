@@ -2,6 +2,7 @@
 #include "Foundation/Utils/StringHelper.h"
 #include "Foundation/Memory/Memory.h"
 #include "CTGAImage.h"
+#include "CMaterial.h"
 
 #include <algorithm>
 
@@ -14,15 +15,21 @@ namespace Magic
         if (extName == "tga")
         {
             resource = NEW CTGAImage();
-            if (resource->Load(fullPath))
-            {
-                DELETE(resource);
-                return nullptr;
-            }
+        }
+        else if (extName == "mat")
+        {
+            resource = NEW CMaterial();
         }
         else
         {
             printf("Uknow resource type: %s\n", extName.c_str());
+            return nullptr;
+        }
+
+        if (!resource->Load(fullPath))
+        {
+            DELETE(resource);
+            return nullptr;
         }
 
         if (!resource)
@@ -39,5 +46,12 @@ namespace Magic
             _Resources.erase(it);
             DELETE *it;
         }
+    }
+
+    IMaterial *CResourceMgr::CreateMaterial()
+    {
+        auto mat = NEW CMaterial();
+        _Resources.push_back(mat);
+        return mat;
     }
 }

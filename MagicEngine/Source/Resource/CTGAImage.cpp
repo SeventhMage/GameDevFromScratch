@@ -96,7 +96,6 @@ namespace Magic
 		// Done with File
 		fclose(pFile);
 
-		// Return pointer to image data
-		return false;
+		return true;
 	}
 }

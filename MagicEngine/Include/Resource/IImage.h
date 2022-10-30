@@ -20,6 +20,7 @@ namespace Magic
             LUMINANCE,
         };
 
+        virtual Type GetType() const { return IMAGE; }
 		virtual unsigned char *GetData() const = 0;
 		virtual Format GetFormat() const = 0;
 		virtual unsigned long GetImageSize() const = 0;

@@ -1,8 +1,6 @@
 #ifndef _MAGIC_I_SHADER_PROGRAM_H_
 #define _MAGIC_I_SHADER_PROGRAM_H_
 
-#include "IShader.h"
-
 namespace Magic
 {
     class IShaderProgram

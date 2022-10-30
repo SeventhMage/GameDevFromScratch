@@ -3,6 +3,10 @@
 
 #include "IResource.h"
 #include "Foundation/Utils/Singleton.hpp"
+#include "IMaterial.h"
+#include "IMesh.h"
+#include "IShader.h"
+
 #include <vector>
 
 namespace Magic
@@ -11,8 +15,10 @@ namespace Magic
     {
     public:
         ~CResourceMgr(){}
-        virtual IResource *LoadResource(const char *fullPath);
-        virtual void Release(IResource *resource);
+        IResource *LoadResource(const char *fullPath);
+        void Release(IResource *resource);
+
+        IMaterial *CreateMaterial();
     private:
         std::vector<IResource *> _Resources;
     };
