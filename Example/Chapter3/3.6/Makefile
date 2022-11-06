@@ -15,7 +15,7 @@ OBJ = $(patsubst %.cpp, $(O_PATH)/%.o, $(notdir $(SOURCE)))
 SOURCE_TO_OBJECT = ./Obj/$(subst .cpp,.o,$(notdir $(1)))
 
 LIBS = -lgdi32 -lstdc++
-CPPFLAGS = -g -Wall -std=c++11 -Ddebug #-fPIC
+CPPFLAGS = -g -Wall -std=c++11 -Ddebug -MMD  #-fPIC
 
 CURDIR := $(shell pwd)
 #$(info $(CURDIR))
@@ -31,6 +31,7 @@ $(TARGET):$(OBJ)
 
 
 define CREATE_OBJECT_TARGET
+-include *.d
 $(call SOURCE_TO_OBJECT,$(1)) : $(1)
 	$(CC) $(INCLULDES) $(CPPFLAGS) -c -o $$@ $$^
 endef
@@ -42,4 +43,4 @@ $(foreach src, $(SOURCE), $(eval $(call CREATE_OBJECT_TARGET, $(src))))
 all: $(TARGET)
 
 clean:
-	rm -rf $(OBJ) $(TARGET)
+	rm -rf $(TARGET) ./Obj/*.*

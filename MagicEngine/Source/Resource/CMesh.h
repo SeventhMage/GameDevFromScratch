@@ -18,14 +18,28 @@ namespace Magic
         virtual void SetColors(Vector3f *, int);
         virtual void SetUVs(Vector2f *, int);
         virtual void SetIndices(int *, int);
-        virtual inline Vector3f *GetVertices();
-        virtual inline Vector3f *GetNormals();
-        virtual Vector3f *GetColors();
-        virtual inline Vector2f *GetUVs();
-        virtual inline int *GetIndices();
-        virtual inline int GetVertexCount();
+        virtual inline Vector3f *GetVertices() const;
+        virtual inline Vector3f *GetNormals() const;
+        virtual Vector3f *GetColors() const;
+        virtual inline Vector2f *GetUVs() const;
+        virtual inline int *GetIndices() const;
+        virtual inline int GetVertexCount() const;
+        virtual inline int GetIndexCount() const;
+        virtual void *GetAttribute(int bit) const;
+        virtual inline int GetAttributeBit() const;
         virtual void Clear();
 
+        enum AttributeBit
+        {
+            Vertex = 1,
+            Normal = 2,
+            Color = 4,
+            UV = 8,
+
+            Count = 4
+        };
+    private:
+        void SetAttributeBit(int bit);
     private:
         IResourceLoader *_ResourceLoader;
         Vector3f *_Vertices;
@@ -34,6 +48,8 @@ namespace Magic
         Vector2f *_UVs;
         int *_Indices;
         int _VertexCount;
+        int _IndexCount;
+        int _AttributeBit;
     };
 }
 

@@ -39,8 +39,8 @@ namespace Magic
         virtual void SetClearColor(float r, float g, float b) = 0;
         virtual void SetClearDepth(float depth) = 0;
         virtual void Clear(int bufferBits = BufferBit::ALL) = 0;
-        virtual IVertexBuffer *CreateVertexBuffer() = 0;
-        virtual IIndexBuffer *CreateIndexBuffer() = 0;
+        virtual IVertexBuffer *CreateVertexBuffer(int size, int vertexCount) = 0;
+        virtual IIndexBuffer *CreateIndexBuffer(int size, int indexCount) = 0;
         virtual void Draw(IRenderInput *renderInput) = 0;
         virtual void SetRenderTarget(IRenderTarget *) = 0;
         virtual void AddRenderInput(IRenderInput *) = 0;

@@ -18,12 +18,15 @@ namespace Magic
         virtual void SetColors(Vector3f *, int) = 0;
         virtual void SetIndices(int *, int) = 0;
         virtual void SetUVs(Vector2f *, int) = 0;
-        virtual Vector3f *GetVertices() = 0;
-        virtual Vector3f *GetNormals() = 0;
-        virtual Vector3f *GetColors() = 0;
-        virtual int *GetIndices() = 0;
-        virtual Vector2f *GetUVs() = 0;
-        virtual int GetVertexCount() = 0;
+        virtual Vector3f *GetVertices() const = 0;
+        virtual Vector3f *GetNormals() const = 0;
+        virtual Vector3f *GetColors() const = 0;
+        virtual int *GetIndices() const = 0;
+        virtual Vector2f *GetUVs() const = 0;
+        virtual int GetVertexCount() const = 0;
+        virtual int GetIndexCount() const = 0;
+        virtual void *GetAttribute(int bit) const = 0;
+        virtual inline int GetAttributeBit() const = 0;
         virtual void Clear() = 0;
     };
 }

@@ -14,14 +14,13 @@ namespace Magic
     bool RendererApplication::OnInitialize()
     { 
         cout << "RendererApplication::OnInitialize" << endl;
-        IVertexBuffer *vertexBuffer = Renderer->CreateVertexBuffer();
-        IIndexBuffer *indexBuffer = Renderer->CreateIndexBuffer();
 
         float triangle[] = { -1.f, -1.f, -10.f, 1.f, 0.f, 0.f,
             1.f, -1.f, -10.f, 0.0f, 1.0f, 0.0f,
             0.f, 1.f, -10.f, 0.0f, 0.0f, 1.0f,
             };
-        vertexBuffer->BufferData(triangle, sizeof(triangle), sizeof(triangle) / (6 * sizeof(float)));
+        IVertexBuffer *vertexBuffer = Renderer->CreateVertexBuffer(sizeof(triangle), sizeof(triangle) / (6 * sizeof(float)));
+        vertexBuffer->BufferData(triangle, sizeof(triangle));
         vertexBuffer->GetAttribute()->SetPositionAttr(0, sizeof(float) * 6);
         vertexBuffer->GetAttribute()->SetColorAttr(sizeof(float) * 3, sizeof(float) * 6);
 

@@ -7,7 +7,7 @@ namespace Magic
     {
     public:
         virtual ~IIndexBuffer(){}
-        virtual void BufferData(void *data, int size, int indexCount) = 0;
+        virtual void BufferData(void *data) = 0;
         virtual int GetIndexCount() const = 0;
         virtual void Prepare() = 0;
     };

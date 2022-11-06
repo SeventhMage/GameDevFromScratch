@@ -15,44 +15,19 @@ namespace Magic
     bool MaterialApplication::OnInitialize()
     { 
         cout << "MaterialApplication::OnInitialize" << endl;
-        IVertexBuffer *vertexBuffer = Renderer->CreateVertexBuffer();
-        IIndexBuffer *indexBuffer = Renderer->CreateIndexBuffer();
 
-        float Cube[] = { 
-            //position
-            -1.f, -1.f, 1.f,  
-            1.f, -1.f, 1.f, 
-            1.f, 1.f, 1.f, 
-            -1.f, 1.f, 1.f,
-            1.f, -1.f, -1.f,
-            -1.f, -1.f, -1.f,
-            -1.f, 1.f, -1.f,
-            1.f, 1.f, -1.f,
+        _Mesh = (IMesh *)CResourceMgr::Instance()->LoadResource("cube.mesh");
+        auto vertexCount = _Mesh->GetVertexCount();
 
-            //uv
-            0, 0,
-            1, 0,
-            1, 1,
-            0, 1,
-            0, 0,
-            1, 0,
-            1, 1,
-            0, 1,
-            };
-  
-        unsigned int indices[] = {0, 1, 2, 0, 2, 3, 
-        4, 5, 6, 4, 6, 7, 
-        1, 4, 7, 1, 7, 2, 
-        5, 0, 3, 5, 3, 6, 
-        //3, 2, 7, 3, 7, 6, 
-        //1, 0, 5, 1, 5, 4
-        };
- 
-        vertexBuffer->BufferData(Cube, sizeof(Cube), 8); 
-        vertexBuffer->GetAttribute()->SetPositionAttr(0, sizeof(float) * 3);
-        vertexBuffer->GetAttribute()->SetUVAttr(sizeof(float) * 8 * 3, sizeof(float) * 2);
+        IVertexBuffer *vertexBuffer = Renderer->CreateVertexBuffer(vertexCount * (sizeof(Vector3f) + sizeof(Vector2f)), vertexCount);
+        vertexBuffer->BufferData(_Mesh->GetVertices(), vertexCount * sizeof(Vector3f));
+        vertexBuffer->BufferData(_Mesh->GetUVs(), vertexCount * sizeof(Vector2f), vertexCount * sizeof(Vector3f));
+        vertexBuffer->GetAttribute()->SetPositionAttr(0, sizeof(Vector3f));
+        vertexBuffer->GetAttribute()->SetUVAttr(sizeof(Vector3f) * vertexCount, sizeof(Vector2f));
 
-        indexBuffer->BufferData(indices, sizeof(indices), sizeof(indices) / sizeof(unsigned int));
+        auto indexCount = _Mesh->GetIndexCount();
+        IIndexBuffer *indexBuffer = Renderer->CreateIndexBuffer(indexCount * sizeof(int), indexCount);
+        indexBuffer->BufferData(_Mesh->GetIndices());
 
         _Geometry = NEW CGeometry(vertexBuffer, indexBuffer);
 
@@ -89,6 +64,7 @@ namespace Magic
         SAFE_DELETE(_Geometry);
         SAFE_DELETE(_ShaderProgram);
         SAFE_DELETE(_Material);
+        SAFE_DELETE(_Mesh);
         for (size_t i = 0; i < _Textures.size(); ++i)
         {
             SAFE_DELETE(_Textures[i]);
@@ -100,7 +76,7 @@ namespace Magic
     {
         Matrix4x4f rotMat0; 
         Matrix4x4f rotMat1; 
-        static float rot = 0;
+        static float rot = 0.5;
             //rot += 0.01f;
         float temp = int(rot / PI_2) * PI_2;
         if (rot >= temp)

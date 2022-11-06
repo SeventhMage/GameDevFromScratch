@@ -42,6 +42,8 @@ namespace Magic
         friend Vector2<T1> operator*(T1 s, const Vector2<T1> &v);
         template <typename T1>
         friend ostream &operator<<(ostream &out, const Vector2<T1> &v);
+        template <typename T1>
+        friend istream &operator>>(istream &in, Vector2<T1> &v);
 
         static const Vector2<T> right;
         static const Vector2<T> up;
@@ -216,6 +218,14 @@ namespace Magic
     {
         out << v.x << "," << v.y;
         return out;
+    }
+
+    template <typename T>
+    istream &operator>>(istream &in, Vector2<T> &v)
+    {
+        std::string temp;
+        in >> v.x  >> temp >> v.y;
+        return in;
     }
 
     typedef Vector2<float> Vector2f;

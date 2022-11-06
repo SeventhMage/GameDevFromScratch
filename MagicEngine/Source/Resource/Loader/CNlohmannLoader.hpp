@@ -31,6 +31,7 @@ namespace Magic
                     j.at("Frag").get_to(res->_FragShader);
                     j.at("Transparent").get_to(res->_isTransparent);
                     j.at("Textures").get_to(res->_Textures);
+                    i.close();
                 }
                 catch (const exception &e)
                 {
@@ -59,6 +60,8 @@ namespace Magic
                     j["Textures"] = res->_Textures;
 
                     o << j;
+
+                    o.close();
                 }
                 catch (const exception &e)
                 {

@@ -36,8 +36,8 @@ namespace Magic
         virtual void SetClearColor(float r, float g, float b) override;
         virtual void SetClearDepth(float depth) override;
         virtual void Clear(int bufferBits) override;
-        virtual IVertexBuffer *CreateVertexBuffer() override;
-        virtual IIndexBuffer *CreateIndexBuffer() override;
+        virtual IVertexBuffer *CreateVertexBuffer(int size, int vertexCount) override;
+        virtual IIndexBuffer *CreateIndexBuffer(int size, int indexCount) override;
         virtual void Draw(IRenderInput *) override;
         virtual void End() override;
         virtual void OnViewportChange() override;

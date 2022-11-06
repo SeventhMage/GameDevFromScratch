@@ -3,6 +3,7 @@
 #include "Foundation/Memory/Memory.h"
 #include "CTGAImage.h"
 #include "CMaterial.h"
+#include "CMesh.h"
 
 #include <algorithm>
 
@@ -19,6 +20,10 @@ namespace Magic
         else if (extName == "mat")
         {
             resource = NEW CMaterial();
+        }
+        else if (extName == "mesh")
+        {
+            resource = NEW CMesh();
         }
         else
         {
@@ -53,5 +58,12 @@ namespace Magic
         auto mat = NEW CMaterial();
         _Resources.push_back(mat);
         return mat;
+    }
+
+    IMesh *CResourceMgr::CreateMesh()
+    {
+        auto mesh = NEW CMesh();
+        _Resources.push_back(mesh);
+        return mesh;
     }
 }

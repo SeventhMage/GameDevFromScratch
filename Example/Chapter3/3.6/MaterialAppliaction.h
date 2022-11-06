@@ -7,6 +7,7 @@
 #include "Graphic/Rendering/CGeometry.h"
 #include "Foundation/Math/Matrix4x4.hpp"
 #include "Resource/IMaterial.h"
+#include "Resource/IMesh.h"
 
 #include <vector>
 using namespace std;
@@ -26,6 +27,7 @@ namespace Magic
         CRenderInput _RenderInput;
         CGeometry *_Geometry;
         IMaterial *_Material;
+        IMesh *_Mesh;
         IShaderProgram *_ShaderProgram;
         vector<ITexture *> _Textures;
         Matrix4x4f _ViewMat;

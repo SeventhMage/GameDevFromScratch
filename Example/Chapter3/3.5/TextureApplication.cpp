@@ -15,8 +15,6 @@ namespace Magic
     bool TextureApplication::OnInitialize()
     { 
         cout << "TextureApplication::OnInitialize" << endl;
-        IVertexBuffer *vertexBuffer = Renderer->CreateVertexBuffer();
-        IIndexBuffer *indexBuffer = Renderer->CreateIndexBuffer();
 
         float Cube[] = { 
             //position
@@ -48,11 +46,13 @@ namespace Magic
         //1, 0, 5, 1, 5, 4
         };
  
-        vertexBuffer->BufferData(Cube, sizeof(Cube), 8); 
+        IVertexBuffer *vertexBuffer = Renderer->CreateVertexBuffer(sizeof(Cube), 8);
+        IIndexBuffer *indexBuffer = Renderer->CreateIndexBuffer(sizeof(indices), sizeof(indices) / sizeof(unsigned int));
+        vertexBuffer->BufferData(Cube, sizeof(Cube), 0); 
         vertexBuffer->GetAttribute()->SetPositionAttr(0, sizeof(float) * 3);
         vertexBuffer->GetAttribute()->SetUVAttr(sizeof(float) * 8 * 3, sizeof(float) * 2);
 
-        indexBuffer->BufferData(indices, sizeof(indices), sizeof(indices) / sizeof(unsigned int));
+        indexBuffer->BufferData(indices);
 
         _Geometry = NEW CGeometry(vertexBuffer, indexBuffer);
         _Texture = Renderer->CreateTexture("crate.tga");

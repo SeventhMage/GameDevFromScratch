@@ -19,6 +19,7 @@ namespace Magic
         void Release(IResource *resource);
 
         IMaterial *CreateMaterial();
+        IMesh *CreateMesh();
     private:
         std::vector<IResource *> _Resources;
     };

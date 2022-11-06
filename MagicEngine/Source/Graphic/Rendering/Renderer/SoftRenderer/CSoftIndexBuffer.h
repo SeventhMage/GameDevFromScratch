@@ -8,9 +8,9 @@ namespace Magic
     class CSoftIndexBuffer : public CIndexBuffer
     {
     public:
-        CSoftIndexBuffer();
+        CSoftIndexBuffer(int size, int indexCount);
         ~CSoftIndexBuffer();
-        virtual void BufferData(void *data, int size, int indexCount);
+        virtual void BufferData(void *data);
         virtual inline int GetIndexCount() const { return _IndexCount; }
         virtual void Prepare();
 

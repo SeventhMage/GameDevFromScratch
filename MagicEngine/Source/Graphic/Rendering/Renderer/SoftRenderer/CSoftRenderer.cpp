@@ -158,13 +158,13 @@ namespace Magic
         }
     }
 
-    IVertexBuffer *CSoftRenderer::CreateVertexBuffer()
+    IVertexBuffer *CSoftRenderer::CreateVertexBuffer(int size, int vertexCount)
     {
-        return NEW CSoftVertexBuffer();
+        return NEW CSoftVertexBuffer(size, vertexCount);
     }
-    IIndexBuffer *CSoftRenderer::CreateIndexBuffer()
+    IIndexBuffer *CSoftRenderer::CreateIndexBuffer(int size, int indexCount)
     {
-        return NEW CSoftIndexBuffer();
+        return NEW CSoftIndexBuffer(size, indexCount);
     }
 
     void CSoftRenderer::End()

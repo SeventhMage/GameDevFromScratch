@@ -12,9 +12,9 @@ namespace Magic
     class CSoftVertexBuffer : public CVertexBuffer
     {
     public:
-        CSoftVertexBuffer();
+        CSoftVertexBuffer(int size, int vertexCount);
         ~CSoftVertexBuffer();
-        virtual void BufferData(void *data, int size, int vertexCount);
+        virtual void BufferData(void *data, int size, int offset);
         virtual int GetVertexCount() const;
         virtual void Prepare(){}
 

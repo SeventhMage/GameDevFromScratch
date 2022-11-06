@@ -2,6 +2,10 @@
 #define _MAGIC_C_ASSIMP_LOADER_HPP_
 
 #include "IResourceLoader.h"
+#include "Dependency/assimp/Importer.hpp"
+#include "Dependency/assimp/scene.h"
+#include "Dependency/assimp/postprocess.h"
+#include "Debugger/LogUtils.h"
 
 namespace Magic
 {
@@ -12,6 +16,13 @@ namespace Magic
         {
             if (resource->GetType() == IResource::Type::MESH)
             {
+                Assimp::Importer importer;
+                const aiScene *scene = importer.ReadFile(filePath, aiProcess_Triangulate | aiProcess_FlipUVs)
+                if (!scene || scene->mFlags == AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
+                {
+                    LogError("CAssimpLoader::Load Error, %s\n", filePath);
+                }
+                
                 return true;
             }
             return false;

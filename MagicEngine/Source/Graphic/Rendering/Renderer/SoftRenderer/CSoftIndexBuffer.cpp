@@ -3,8 +3,8 @@
 
 namespace Magic
 {
-    CSoftIndexBuffer::CSoftIndexBuffer()
-        : _Buffer(nullptr), _Size(0), _IndexCount(0)
+    CSoftIndexBuffer::CSoftIndexBuffer(int size, int indexCount)
+        : _Buffer(NEW unsigned char[size]), _Size(size), _IndexCount(indexCount)
     {
     }
     CSoftIndexBuffer::~CSoftIndexBuffer()
@@ -12,14 +12,9 @@ namespace Magic
         SAFE_DELETE_ARRAY(_Buffer);
     }
 
-    void CSoftIndexBuffer::BufferData(void *data, int size, int indexCount)
+    void CSoftIndexBuffer::BufferData(void *data)
     {
-        if (_Size > 0 && _Size != size)
-            SAFE_DELETE_ARRAY(_Buffer);
-        _Buffer = NEW unsigned char[size];
-        memcpy(_Buffer, data, size);
-        _Size = size;
-        _IndexCount = indexCount;
+        memcpy(_Buffer, data, _Size);
     }
 
     void CSoftIndexBuffer::Prepare()

@@ -3,8 +3,8 @@
 
 namespace Magic
 {
-    CSoftVertexBuffer::CSoftVertexBuffer()
-        : _Buffer(nullptr), _Size(0), _VertexCount(0)
+    CSoftVertexBuffer::CSoftVertexBuffer(int size, int vertexCount)
+        : _Buffer(NEW unsigned char[size]), _Size(size), _VertexCount(vertexCount)
     {
     }
     CSoftVertexBuffer::~CSoftVertexBuffer()
@@ -12,14 +12,10 @@ namespace Magic
         SAFE_DELETE_ARRAY(_Buffer);
     }
 
-    void CSoftVertexBuffer::BufferData(void *data, int size, int vertexCount)
+    void CSoftVertexBuffer::BufferData(void *data, int size, int offset)
     {
-        if (_Size > 0 && _Size != size)
-            SAFE_DELETE_ARRAY(_Buffer);
-        _Buffer = NEW unsigned char[size];
-        memcpy(_Buffer, data, size);
-        _Size = size;
-        _VertexCount = vertexCount;
+        assert(data);
+        memcpy(_Buffer + offset, data, MIN(size, _Size - offset));
     }
 
     int CSoftVertexBuffer::GetVertexCount() const
