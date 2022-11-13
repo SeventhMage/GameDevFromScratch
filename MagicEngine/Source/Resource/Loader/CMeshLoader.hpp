@@ -11,6 +11,9 @@ using namespace std;
 
 namespace Magic
 {
+    /**
+     * 数据存储格式： 顶点数|顶点属性|顶点数据|索引数|索引数据
+     */
     class CMeshLoader : public IResourceLoader
     {
     public:

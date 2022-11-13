@@ -1,6 +1,6 @@
 ENGINE_SOURCE = ../../../MagicEngine/Source
-FILES_SUFFIX := %.cpp %.c
-INCLULDES = -I../../../MagicEngine/Include -I../../../MagicEngine/Source -I../Include
+FILES_SUFFIX := Source/%.cpp Source/%.c
+INCLULDES = -I../../../MagicEngine/Include -I../../../MagicEngine/Source -I../Include -I../../../MagicEngine/Include/Dependency
 LIB_PATH = -L./../../../MagicEngine/lib
 
 rwildcard=$(wildcard $1$2) $(foreach d,$(wildcard $1*),$(call rwildcard,$d/,$2))
@@ -42,4 +42,4 @@ $(foreach src, $(SOURCE), $(eval $(call CREATE_OBJECT_TARGET, $(src))))
 all: $(TARGET)
 
 clean:
-	rm -rf $(OBJ) $(TARGET)
+	rm -rf $(TARGET) ./Obj/*.*
