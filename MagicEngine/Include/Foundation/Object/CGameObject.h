@@ -3,8 +3,8 @@
 
 #include <vector>
 
-#include "Foundation/Object/CObject.h"
-#include "Foundation/Object/IComponent.h"
+#include "CObject.h"
+#include "IComponent.h"
 
 namespace Magic
 {

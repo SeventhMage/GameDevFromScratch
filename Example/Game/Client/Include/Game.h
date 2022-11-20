@@ -12,6 +12,8 @@ namespace Magic
         ~Game();
         void Initalize();
         void Terminate();
+        void Update();
+
     };
 }
 

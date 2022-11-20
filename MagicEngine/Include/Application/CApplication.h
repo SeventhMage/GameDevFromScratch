@@ -3,6 +3,7 @@
 
 #include "ApplicationMCR.h"
 #include "Graphic/Rendering/IRenderer.h"
+#include "Scene/ISceneManager.h"
 
 namespace Magic
 {
@@ -28,6 +29,7 @@ namespace Magic
         void Update();
         static CApplication *TheApp;
         IRenderer *Renderer;
+        ISceneManager *SceneManager;
     private:
         int _FPS;
         int _MaxFPS;

@@ -17,6 +17,7 @@ namespace Magic
         
         virtual void Enter() {}
         virtual void Leave() {}
+        virtual void Update(){}
     };
 }
 

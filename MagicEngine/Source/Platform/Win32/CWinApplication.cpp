@@ -1,4 +1,4 @@
-#ifdef _WIN32
+#ifdef _WIN32 
 #define UNICODE
 #include "Application/CApplication.h"
 #include "Foundation/System/CMain.h"
@@ -27,7 +27,10 @@ namespace Magic
     CApplication::CApplication()
         :Renderer(nullptr), _FPS(60), _MaxFPS(120), _WindowWidth(1280), _WindowHeight(960)
     {
+        //todo  根据配置选择渲染器、场景管理器
         Renderer = NEW CSoftRenderer(_WindowWidth, _WindowHeight);
+        //todo 
+        //SceneManager = NEW C
     }
 
     CApplication::~CApplication()

@@ -1,7 +1,7 @@
-ENGINE_SOURCE = ../../../MagicEngine/Source
-FILES_SUFFIX := Source/%.cpp Source/%.c
-INCLULDES = -I../../../MagicEngine/Include -I../../../MagicEngine/Source -I../Include -I../../../MagicEngine/Include/Dependency
-LIB_PATH = -L./../../../MagicEngine/lib
+ENGINE_SOURCE = ../../../../MagicEngine/Source
+FILES_SUFFIX := %.cpp %.c
+INCLULDES = -I../../../../MagicEngine/Include -I../../../../MagicEngine/Source -I../../Include -I../../../../MagicEngine/Include/Dependency -I../Include
+LIB_PATH = -L./../../../../MagicEngine/lib
 
 rwildcard=$(wildcard $1$2) $(foreach d,$(wildcard $1*),$(call rwildcard,$d/,$2))
 
@@ -12,10 +12,10 @@ SOURCE := $(filter $(FILES_SUFFIX),$(ENGINE_ALL_FILES))
 SOURCE += $(wildcard  ./*.cpp)
 OBJ = $(patsubst %.cpp, $(O_PATH)/%.o, $(notdir $(SOURCE)))
 
-SOURCE_TO_OBJECT = ./Obj/$(subst .cpp,.o,$(notdir $(1)))
+SOURCE_TO_OBJECT = $(O_PATH)/$(subst .cpp,.o,$(notdir $(1)))
 
 LIBS = -lgdi32 -lstdc++
-CPPFLAGS = -g -Wall -std=c++11 -Ddebug #-fPIC
+CPPFLAGS = -g -Wall -std=c++11 -Ddebug -D _WIN32 #-fPIC
 
 CURDIR := $(shell pwd)
 #$(info $(CURDIR))
@@ -42,4 +42,4 @@ $(foreach src, $(SOURCE), $(eval $(call CREATE_OBJECT_TARGET, $(src))))
 all: $(TARGET)
 
 clean:
-	rm -rf $(TARGET) ./Obj/*.*
+	rm -rf $(TARGET) $(O_PATH)/*.*

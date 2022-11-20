@@ -7,7 +7,11 @@ namespace Magic
 {
     class WorldState : public GameState
     {
-    
+    public:
+        virtual void Enter();
+        virtual void Leave();
+        virtual void Update();
+    private:
     };
 }
 

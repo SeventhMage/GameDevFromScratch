@@ -1,4 +1,4 @@
-#include "Scene/CGameObject.h"
+#include "Foundation/Object/CGameObject.h"
 
 namespace Magic
 {

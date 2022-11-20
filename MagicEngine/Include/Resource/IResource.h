@@ -12,6 +12,7 @@ namespace Magic
             MESH,
             IMAGE,
             SHADER,
+            SCENE,
         };
         virtual ~IResource(){}
         virtual Type GetType() const = 0;

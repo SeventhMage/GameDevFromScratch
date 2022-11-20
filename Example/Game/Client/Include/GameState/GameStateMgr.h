@@ -8,12 +8,14 @@
 
 namespace Magic
 {
-    class GameStateMgr : Singleton<GameStateMgr>
+    class GameStateMgr : public Singleton<GameStateMgr>
     {
     public:
         void EnterState(GameState::StateID stateId);
         void LeaveState();
+        void Update();
     private:
+        friend class Singleton<GameStateMgr>;
         GameStateMgr();
         ~GameStateMgr();
         std::vector<GameState::StateID> _GameStateStack;

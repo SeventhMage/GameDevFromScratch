@@ -1,4 +1,4 @@
-#include "CCamera.h"
+#include "Scene/CCamera.h"
 
 namespace Magic
 {
